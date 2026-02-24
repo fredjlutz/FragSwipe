@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
 import { listingSchema } from '@/lib/validation/listingSchema';
 import { isListingCreationAllowed } from '@/lib/limits';
 import { ZodError } from 'zod';
