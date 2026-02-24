@@ -56,8 +56,8 @@ export async function createProfile(data: ProfileFormValues) {
         }
 
         return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Profile creation error:', error);
-        return { success: false, error: error.message || 'An unexpected error occurred.' };
+        return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred.' };
     }
 }

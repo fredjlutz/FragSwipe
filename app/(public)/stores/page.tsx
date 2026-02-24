@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { Store, MapPin, ExternalLink } from 'lucide-react';
@@ -44,7 +45,7 @@ export default async function StoresDirectoryPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {stores.map((store) => (
+                        {stores.map((store: { handle: string; full_name: string; store_logo: string; store_description: string; neighbourhood: string }) => (
                             <Link
                                 key={store.handle}
                                 href={`/stores/${store.handle}`}

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState } from 'react';
@@ -44,8 +45,8 @@ export default function SubscribePage() {
             document.body.appendChild(form);
             form.submit(); // Takes the user entirely to PayFast
 
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : String(err));
             setLoadingTier(null);
         }
     };
@@ -120,11 +121,11 @@ export default function SubscribePage() {
                         </li>
                     </ul>
                     <button
-                        onClick={() => handleSubscribe('pro')}
-                        disabled={loadingTier !== null}
-                        className="mt-8 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-700 transition flex items-center justify-center disabled:opacity-50 shadow-md"
+                        onClick={() => { }}
+                        disabled={true}
+                        className="mt-8 w-full bg-gray-200 text-gray-500 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center cursor-not-allowed shadow-none"
                     >
-                        {loadingTier === 'pro' ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Subscribe to Pro'}
+                        Coming Soon
                     </button>
                 </div>
 
@@ -153,11 +154,11 @@ export default function SubscribePage() {
                         </li>
                     </ul>
                     <button
-                        onClick={() => handleSubscribe('store')}
-                        disabled={loadingTier !== null}
-                        className="mt-8 w-full bg-white text-gray-900 font-bold py-3 px-4 rounded-xl hover:bg-gray-100 transition flex items-center justify-center disabled:opacity-50"
+                        onClick={() => { }}
+                        disabled={true}
+                        className="mt-8 w-full bg-gray-800 text-gray-500 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center cursor-not-allowed"
                     >
-                        {loadingTier === 'store' ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Open a Store <ArrowRight className="w-4 h-4 ml-1 inline" /></span>}
+                        Coming Soon
                     </button>
                 </div>
             </div>

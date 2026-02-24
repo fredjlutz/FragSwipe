@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Users, LayoutList, AlertTriangle, TrendingUp } from 'lucide-react';
+import { Users, LayoutList, AlertTriangle, TrendingUp, BarChart2 } from 'lucide-react';
 
 type Stats = {
     totalUsers: number;
@@ -49,7 +49,7 @@ export default function AdminOverviewPage() {
 
             // Group categories for chart
             if (categoryData) {
-                const counts = categoryData.reduce((acc: any, curr: any) => {
+                const counts = categoryData.reduce((acc: Record<string, number>, curr: { category: string }) => {
                     acc[curr.category] = (acc[curr.category] || 0) + 1;
                     return acc;
                 }, {});
@@ -65,6 +65,7 @@ export default function AdminOverviewPage() {
             setLoading(false);
         }
         fetchStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading || !stats) {

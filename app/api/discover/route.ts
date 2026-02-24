@@ -43,8 +43,8 @@ export async function GET(request: Request) {
         }
 
         // 2. Fetch images and seller WhatsApp numbers
-        const listingIds = rawListings.map((l: any) => l.id);
-        const sellerIds = [...new Set(rawListings.map((l: any) => l.seller_id))];
+        const listingIds = rawListings.map((l: { id: string }) => l.id);
+        const sellerIds = [...new Set(rawListings.map((l: { seller_id: string }) => l.seller_id))];
 
         const [imagesRes, profilesRes] = await Promise.all([
             supabase
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
         // Group images by listing ID
         const imagesMap: Record<string, string[]> = {};
         if (imagesData) {
-            imagesData.forEach((img: any) => {
+            imagesData.forEach((img: { listing_id: string; storage_path: string }) => {
                 if (!imagesMap[img.listing_id]) imagesMap[img.listing_id] = [];
                 const { data } = supabase.storage.from('listing_images').getPublicUrl(img.storage_path);
                 imagesMap[img.listing_id].push(data.publicUrl);
@@ -72,12 +72,12 @@ export async function GET(request: Request) {
         }
 
         const whatsappMap: Record<string, string> = {};
-        profilesData.forEach((p: any) => {
+        profilesData.forEach((p: { id: string; whatsapp_number: string }) => {
             whatsappMap[p.id] = p.whatsapp_number;
         });
 
         // 3. SECURE MAPPING
-        const mappedListings = rawListings.map((listing: any) => {
+        const mappedListings = rawListings.map((listing: { id: string; seller_id: string; title: string; description: string; price: number; category: string; tags: string[]; neighbourhood: string; location: string | { coordinates: [number, number] } | null; created_at: string; }) => {
             let calcDistance = 0;
             let targetLat = userLat;
             let targetLng = userLng;
@@ -120,8 +120,8 @@ export async function GET(request: Request) {
 
         return NextResponse.json({ data: mappedListings });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Discover API error:', error);
-        return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }

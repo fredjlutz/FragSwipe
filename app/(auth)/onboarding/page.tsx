@@ -50,7 +50,7 @@ export default function OnboardingPage() {
                     </p>
                     <div className="mt-3 p-3 bg-blue-50 rounded text-xs text-blue-800 border border-blue-200">
                         <p className="font-semibold mb-1">Privacy Notice:</p>
-                        Your exact address is strictly kept private and used only to calculate distances. Other users will only see your overall neighbourhood (e.g., "Sea Point") and your distance in km.
+                        Your exact address is strictly kept private and used only to calculate distances. Other users will only see your overall neighbourhood (e.g., &quot;Sea Point&quot;) and your distance in km.
                     </div>
                 </div>
 

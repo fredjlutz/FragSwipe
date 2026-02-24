@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
 import { useState } from 'react';
 import type { SwipeListing } from '@/hooks/useSwipeQueue';
-import { Heart, X, MessageCircle, MapPin, Tag as TagIcon } from 'lucide-react';
+import { Heart, X, MessageCircle, MapPin } from 'lucide-react';
 
 interface ListingSwipeCardProps {
     listing: SwipeListing;
@@ -31,7 +32,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
 
     const animControls = useAnimation();
 
-    const handleDragEnd = async (e: any, info: any) => {
+    const handleDragEnd = async (e: unknown, info: { offset: { x: number } }) => {
         const threshold = 100;
         if (info.offset.x > threshold) {
             // Swiped Right
@@ -104,7 +105,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
                 {/* Carousel Indicators */}
                 {listing.images.length > 1 && (
                     <div className="absolute top-4 left-0 right-0 flex justify-center space-x-1.5 px-4 z-10 pointer-events-none">
-                        {listing.images.map((_, i) => (
+                        {listing.images.map((_: string, i: number) => (
                             <div
                                 key={i}
                                 className={`h-1.5 flex-1 rounded-full ${i === currentImageIndex ? 'bg-white shadow-sm' : 'bg-black/30'}`}
@@ -147,7 +148,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
                         <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full border border-gray-200 capitalize">
                             {listing.category.replace('_', ' ')}
                         </span>
-                        {listing.tags.slice(0, 2).map(tag => (
+                        {(listing.tags || []).slice(0, 2).map((tag: string) => (
                             <span key={tag} className="px-2 py-0.5 bg-gray-50 text-gray-500 text-xs rounded-full border border-gray-100">
                                 {tag}
                             </span>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState } from 'react';
@@ -94,9 +95,9 @@ export default function NewListingPage() {
             }
 
             router.push('/my-listings?success=1');
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setErrorStatus(err.message);
+            setErrorStatus(err instanceof Error ? err.message : String(err));
         } finally {
             setIsUploading(false);
         }
@@ -142,7 +143,7 @@ export default function NewListingPage() {
                     <div className="space-y-4">
                         <h2 className="text-xl font-semibold mb-4">What are you selling?</h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {listingCategories.map(cat => (
+                            {listingCategories.map((cat: string) => (
                                 <label key={cat} className="cursor-pointer">
                                     <input type="radio" value={cat} className="hidden peer" {...register('category')} />
                                     <div className="p-4 border border-gray-200 rounded-lg text-center peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-700 hover:bg-gray-50 transition-colors">

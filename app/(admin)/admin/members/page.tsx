@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Shield, ShieldOff, Search, Trash2 } from 'lucide-react';
+import { Shield, ShieldOff, Search } from 'lucide-react';
 
 type Member = {
     id: string;
@@ -23,6 +23,7 @@ export default function MembersManagementPage() {
 
     useEffect(() => {
         fetchMembers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchMembers = async () => {
@@ -120,7 +121,7 @@ export default function MembersManagementPage() {
                                                     {member.role}
                                                 </span>
                                                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${member.subscription_tier === 'store' ? 'bg-indigo-100 text-indigo-700' :
-                                                        member.subscription_tier === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                                                    member.subscription_tier === 'pro' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
                                                     }`}>
                                                     {member.subscription_tier}
                                                 </span>
@@ -141,8 +142,8 @@ export default function MembersManagementPage() {
                                             <button
                                                 onClick={() => toggleBan(member.id, member.is_banned)}
                                                 className={`text-sm font-bold px-4 py-2 rounded-lg transition ${member.is_banned
-                                                        ? 'bg-gray-900 text-white hover:bg-gray-800'
-                                                        : 'bg-red-50 text-red-600 hover:bg-red-100'
+                                                    ? 'bg-gray-900 text-white hover:bg-gray-800'
+                                                    : 'bg-red-50 text-red-600 hover:bg-red-100'
                                                     }`}
                                             >
                                                 {member.is_banned ? 'Unban User' : 'Ban User'}

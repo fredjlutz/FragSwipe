@@ -9,13 +9,11 @@ export async function POST(request: Request) {
         const forwardedFor = request.headers.get('x-forwarded-for');
         const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : request.headers.get('host');
 
-        // NOTE: In strict production mode, you should uncomment this enforcement line.
-        // If you are testing locally with Ngrok, PayFast IPs will fail this check.
-        /*
+        // NOTE: In strict production mode, we enforce PayFast IP whitelisting.
         if (process.env.NODE_ENV === 'production' && !validPayFastIPs.includes(ip || '')) {
-          return NextResponse.json({ error: 'Untrusted Origin' }, { status: 403 });
+            console.error('Forced rejection: Untrusted Origin IP:', ip);
+            return NextResponse.json({ error: 'Untrusted Origin' }, { status: 403 });
         }
-        */
 
         // 2. Parse payload. PayFast sends url-encoded form data.
         const formData = await request.formData();
@@ -77,7 +75,7 @@ export async function POST(request: Request) {
         // Valid PayFast ITNs MUST respond with generic HTTP 200 OK
         return new Response('OK', { status: 200 });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('ITN Critical Error:', err);
         return new Response('Server Error', { status: 500 });
     }

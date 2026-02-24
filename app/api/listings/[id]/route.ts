@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { listingSchema } from '@/lib/validation/listingSchema';
+import { ZodError } from 'zod';
 
 export async function PATCH(
     request: Request,
@@ -58,12 +59,12 @@ export async function PATCH(
         }
 
         return NextResponse.json({ data });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Update listing error:', error);
-        if (error.name === 'ZodError') {
+        if (error instanceof ZodError) {
             return NextResponse.json({ error: error.errors }, { status: 400 });
         }
-        return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }
 
@@ -91,8 +92,8 @@ export async function DELETE(
         }
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Delete listing error:', error);
-        return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }

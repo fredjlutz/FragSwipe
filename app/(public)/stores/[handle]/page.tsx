@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import { createClient } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import { MapPin, MessageCircle, Info } from 'lucide-react';
-import Link from 'next/link';
 
 export default async function SingleStorePage({ params }: { params: { handle: string } }) {
     const supabase = createClient();
@@ -29,9 +29,9 @@ export default async function SingleStorePage({ params }: { params: { handle: st
 
     // 3. Fetch Images for those listings
     const listings = rawListings || [];
-    const listingIds = listings.map(l => l.id);
+    const listingIds = listings.map((l: { id: string }) => l.id);
 
-    let imagesMap: Record<string, string> = {};
+    const imagesMap: Record<string, string> = {};
     if (listingIds.length > 0) {
         const { data: imagesData } = await supabase
             .from('listing_images')
@@ -40,7 +40,7 @@ export default async function SingleStorePage({ params }: { params: { handle: st
             .order('display_order', { ascending: true }); // Only need the cover image
 
         if (imagesData) {
-            imagesData.forEach(img => {
+            imagesData.forEach((img: { listing_id: string; storage_path: string }) => {
                 if (!imagesMap[img.listing_id]) {
                     const { data } = supabase.storage.from('listing_images').getPublicUrl(img.storage_path);
                     imagesMap[img.listing_id] = data.publicUrl;
@@ -127,7 +127,7 @@ export default async function SingleStorePage({ params }: { params: { handle: st
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {listings.map(listing => (
+                            {listings.map((listing: { id: string; category: string; title: string; price: number }) => (
                                 <div key={listing.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition">
                                     <div className="aspect-[4/5] bg-gray-100 relative">
                                         <img

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
-import { MoreVertical, Trash2, Edit3, Pause, Play, Tag } from 'lucide-react';
+import { Trash2, Edit3, Pause, Play, Tag } from 'lucide-react';
 
 type Listing = {
     id: string;
@@ -21,6 +21,7 @@ export default function MyListingsPage() {
 
     useEffect(() => {
         fetchListings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchListings = async () => {

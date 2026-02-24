@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { geocodeAddress } from '../../lib/geocoding';
 
@@ -14,15 +17,14 @@ describe('geocodeAddress', () => {
     });
 
     it('should throw an error if called in a browser environment', async () => {
-        // Temporarily mock window
-        const originalWindow = global.window;
-        global.window = {} as any;
+        // Temporarily mock window reliably in jsdom using vi.stubGlobal
+        vi.stubGlobal('window', {});
 
         await expect(geocodeAddress('123 Test St')).rejects.toThrow(
             'Geocoding must only be called on the server.'
         );
 
-        global.window = originalWindow;
+        vi.unstubAllGlobals();
     });
 
     it('should successfully parse a valid address with a neighborhood', async () => {

@@ -8,7 +8,7 @@ const cspHeader = `
     font-src 'self' data:;
     object-src 'none';
     base-uri 'self';
-    form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za;
+    form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za https://fragswipe.co.za;
     frame-ancestors 'none';
     connect-src 'self' https://*.supabase.co https://maps.googleapis.com wss://*.supabase.co;
 `;

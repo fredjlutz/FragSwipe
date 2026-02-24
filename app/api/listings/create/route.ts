@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { listingSchema } from '@/lib/validation/listingSchema';
 import { isListingCreationAllowed } from '@/lib/limits';
+import { ZodError } from 'zod';
 
 export async function POST(request: Request) {
     try {
@@ -72,11 +73,11 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json({ data: listing });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Create listing error:', error);
-        if (error.name === 'ZodError') {
+        if (error instanceof ZodError) {
             return NextResponse.json({ error: error.errors }, { status: 400 });
         }
-        return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal Server Error' }, { status: 500 });
     }
 }

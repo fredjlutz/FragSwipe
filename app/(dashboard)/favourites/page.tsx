@@ -34,7 +34,7 @@ export default function FavouritesPage() {
             .on(
                 'postgres_changes',
                 { event: 'UPDATE', schema: 'public', table: 'listings' },
-                (payload) => {
+                (payload: { new: { id: string; status: string } }) => {
                     // If a listing in our Favourites array gets updated (e.g. marked 'sold' or 'paused')
                     // Optimistically update the UI to reflect it immediately
                     setFavourites((prev) =>
@@ -58,6 +58,7 @@ export default function FavouritesPage() {
         return () => {
             supabase.removeChannel(channel);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchFavourites = async () => {
@@ -102,14 +103,14 @@ export default function FavouritesPage() {
             .eq('id', id);
     };
 
-    const generateWhatsAppLink = (listing: any) => {
+    const generateWhatsAppLink = (listing: { title: string; profiles?: { whatsapp_number: string } | null }) => {
         const number = listing.profiles?.whatsapp_number || '';
         const message = encodeURIComponent(`Hi, I'm interested in your ${listing.title} on FragSwipe.`);
         return `https://wa.me/${number}?text=${message}`;
     };
 
     // Helper to grab the first image reliably
-    const getCoverImageUri = (images: any[]) => {
+    const getCoverImageUri = (images: { storage_path: string }[]) => {
         if (!images || images.length === 0) return 'https://via.placeholder.com/300?text=No+Image';
         const { data } = supabase.storage.from('listing_images').getPublicUrl(images[0].storage_path);
         return data.publicUrl;
@@ -118,7 +119,7 @@ export default function FavouritesPage() {
     return (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[80vh]">
             <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-2">My Favourites</h1>
-            <p className="text-gray-500 mb-8">Items you've liked from your discovery feed.</p>
+            <p className="text-gray-500 mb-8">Items you&apos;ve liked from your discovery feed.</p>
 
             {loading ? (
                 <div className="flex justify-center py-20">
@@ -128,7 +129,7 @@ export default function FavouritesPage() {
                 <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
                     <Heart className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900">No favourites yet</h3>
-                    <p className="mt-1 text-gray-500 text-sm">Right-swipe or hit the heart on listings you like, and they'll show up here.</p>
+                    <p className="mt-1 text-gray-500 text-sm">Right-swipe or hit the heart on listings you like, and they&apos;ll show up here.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,6 +140,7 @@ export default function FavouritesPage() {
                         return (
                             <div key={fav.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col sm:flex-row relative">
                                 <div className="sm:w-1/3 h-48 sm:h-auto shrink-0 relative">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src={getCoverImageUri(l.listing_images)}
                                         alt={l.title}

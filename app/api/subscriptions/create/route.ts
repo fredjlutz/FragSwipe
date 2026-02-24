@@ -59,6 +59,8 @@ export async function POST(request: Request) {
             if (profile.whatsapp_number) {
                 payload.custom_str3 = profile.whatsapp_number; // pass it through for record mapping if necessary
             }
+        }
+        if (session.user.email) {
             payload.email_address = session.user.email;
         }
 
@@ -72,8 +74,8 @@ export async function POST(request: Request) {
             }
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Subscription API Error:', error);
-        return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Server error' }, { status: 500 });
     }
 }

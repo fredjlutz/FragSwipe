@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Trash2, AlertTriangle, ExternalLink, Search } from 'lucide-react';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { Trash2, Search } from 'lucide-react';
 
 type ListingRaw = {
     id: string;
@@ -28,6 +27,7 @@ export default function GlobalListingsPage() {
 
     useEffect(() => {
         fetchListings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [statusFilter]);
 
     const fetchListings = async () => {
@@ -68,9 +68,10 @@ export default function GlobalListingsPage() {
             setListings(prev => prev.filter(l => l.id !== id));
             alert('Listing permanently destroyed.');
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            alert(`Hard delete strictly denied or failed: ${err.message}`);
+            const msg = err instanceof Error ? err.message : String(err);
+            alert(`Hard delete strictly denied or failed: ${msg}`);
         }
     };
 
@@ -151,9 +152,9 @@ export default function GlobalListingsPage() {
                                         </td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${item.status === 'active' ? 'bg-green-100 text-green-700' :
-                                                    item.status === 'sold' ? 'bg-purple-100 text-purple-700' :
-                                                        item.status === 'shadow_banned' ? 'bg-orange-100 text-orange-700' :
-                                                            'bg-gray-100 text-gray-700'
+                                                item.status === 'sold' ? 'bg-purple-100 text-purple-700' :
+                                                    item.status === 'shadow_banned' ? 'bg-orange-100 text-orange-700' :
+                                                        'bg-gray-100 text-gray-700'
                                                 }`}>
                                                 {item.status.replace('_', ' ')}
                                             </span>

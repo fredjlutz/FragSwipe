@@ -64,8 +64,8 @@ export function generatePayFastSignature(payload: Record<string, string | number
         .filter(key => key !== 'signature' && payload[key] !== '' && payload[key] !== null)
         .sort();
 
-    for (let key of keys) {
-        let val = payload[key];
+    for (const key of keys) {
+        const val = payload[key];
         if (val !== undefined && val !== null) {
             pfOutput += `${key}=${encodeURIComponent(val.toString().trim()).replace(/%20/g, '+')}&`;
         }

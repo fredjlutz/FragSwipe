@@ -89,7 +89,7 @@ export default function DiscoverPage() {
                                 className="w-full border-gray-300 rounded-md text-sm p-2 bg-gray-50 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none capitalize"
                             >
                                 <option value="">All Categories</option>
-                                {listingCategories.map(cat => (
+                                {listingCategories.map((cat: string) => (
                                     <option key={cat} value={cat}>{cat.replace('_', ' ')}</option>
                                 ))}
                             </select>
@@ -109,7 +109,7 @@ export default function DiscoverPage() {
                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                             <Ghost className="w-8 h-8 text-gray-400" />
                         </div>
-                        <h2 className="text-xl font-bold text-gray-800">You're all caught up!</h2>
+                        <h2 className="text-xl font-bold text-gray-800">You&apos;re all caught up!</h2>
                         <p className="text-gray-500 mt-2 text-sm leading-relaxed">
                             There are no more active listings within {filterRadius}km.
                             Check back later or expand your search radius.
@@ -141,6 +141,7 @@ export default function DiscoverPage() {
                                         listing={listing}
                                         active={isActive}
                                         onSwipe={swipe}
+                                        whatsappNumber={listing.seller_whatsapp || ''}
                                         sellerWhatsApp={listing.seller_whatsapp}
                                     />
                                 </div>

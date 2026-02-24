@@ -26,7 +26,7 @@ export default function CoralPhotographyGuide() {
                         How to Photograph Corals Like a Pro
                     </h1>
                     <p className="mt-6 text-xl text-gray-400">
-                        Beat the infamous "blue wash" and showcase your frags with honest, vibrant accuracy.
+                        Beat the infamous &quot;blue wash&quot; and showcase your frags with honest, vibrant accuracy.
                     </p>
                 </div>
             </div>
@@ -36,7 +36,7 @@ export default function CoralPhotographyGuide() {
                 <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 border border-gray-100 prose prose-lg prose-blue max-w-none">
 
                     <p className="lead text-xl text-gray-600 mb-10">
-                        We've all seen them: listings where the entire tank looks like someone accidentally spilled a bucket of Windex. If your coral photos are completely washed out in blue, buyers scroll right past. Here is exactly how to fix it using just your smartphone.
+                        We&apos;ve all seen them: listings where the entire tank looks like someone accidentally spilled a bucket of Windex. If your coral photos are completely washed out in blue, buyers scroll right past. Here is exactly how to fix it using just your smartphone.
                     </p>
 
                     <div className="flex items-center text-blue-600 mb-6">
@@ -62,7 +62,7 @@ export default function CoralPhotographyGuide() {
                         This is the silver bullet. You cannot digitally edit away a severe blue wash without destroying the image quality. You need a physical optical filter.
                     </p>
                     <p>
-                        Invest in a cheap <strong>Coral Lens Kit</strong> (usually a clip-on for your phone). Most kits come with a 15k or 20k orange filter. The orange physically blocks the excess blue spectrum before it hits your phone's sensor, revealing the neon greens, reds, and yellows underneath.
+                        Invest in a cheap <strong>Coral Lens Kit</strong> (usually a clip-on for your phone). Most kits come with a 15k or 20k orange filter. The orange physically blocks the excess blue spectrum before it hits your phone&apos;s sensor, revealing the neon greens, reds, and yellows underneath.
                     </p>
 
                     <hr className="my-12 border-gray-100" />
@@ -89,7 +89,7 @@ export default function CoralPhotographyGuide() {
                             <CheckCircle className="w-5 h-5 mr-2" /> Buyers Appreciate Honesty
                         </h4>
                         <p className="text-blue-800 mt-2 mb-0">
-                            If it's just a standard green mushroom, don't edit it to look like a jawbreaker. Great composition, sharp focus, and accurate color representation will always sell faster than heavy photoshop. Happy swiping!
+                            If it&apos;s just a standard green mushroom, don&apos;t edit it to look like a jawbreaker. Great composition, sharp focus, and accurate color representation will always sell faster than heavy photoshop. Happy swiping!
                         </p>
                     </div>
 

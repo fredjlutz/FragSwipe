@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { AlertCircle, CheckCircle, Trash2, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
+import { AlertCircle, CheckCircle, Trash2 } from 'lucide-react';
 
 type FlaggedListing = {
     id: string;
@@ -25,6 +24,7 @@ export default function ModerationQueuePage() {
 
     useEffect(() => {
         fetchQueue();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchQueue = async () => {
