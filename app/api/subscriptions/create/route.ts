@@ -18,6 +18,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Invalid subscription tier' }, { status: 400 });
         }
 
+        // Check if PayFast is configured
+        if (!env.PAYFAST_MERCHANT_ID || !env.PAYFAST_MERCHANT_KEY) {
+            return NextResponse.json({ error: 'Subscriptions are coming soon!' }, { status: 503 });
+        }
+
         // Determine pricing based on tier choice
         const amount = tier === 'pro' ? '29.00' : '99.00';
         const itemName = tier === 'pro' ? 'FragSwipe PRO Monthly' : 'FragSwipe STORE Monthly';
@@ -28,8 +33,8 @@ export async function POST(request: Request) {
         const appUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
         const payload: Record<string, string | number> = {
-            merchant_id: env.PAYFAST_MERCHANT_ID,
-            merchant_key: env.PAYFAST_MERCHANT_KEY,
+            merchant_id: env.PAYFAST_MERCHANT_ID || '',
+            merchant_key: env.PAYFAST_MERCHANT_KEY || '',
             return_url: `${appUrl}/my-listings?upgrade=success`,
             cancel_url: `${appUrl}/subscribe?upgrade=cancelled`,
             notify_url: `${appUrl}/api/payfast/itn`,
