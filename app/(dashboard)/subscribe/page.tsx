@@ -1,56 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useState } from 'react';
-import { Check, Loader2, ArrowRight } from 'lucide-react';
-
-// Whether to post to sandbox or live (PayFast Sandbox tests)
-const PAYFAST_URL = process.env.NODE_ENV === 'production'
-    ? 'https://www.payfast.co.za/eng/process'
-    : 'https://sandbox.payfast.co.za/eng/process';
+import { Check } from 'lucide-react';
 
 export default function SubscribePage() {
-    const [loadingTier, setLoadingTier] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
-
-    const handleSubscribe = async (tier: 'pro' | 'store') => {
-        setLoadingTier(tier);
-        setError(null);
-
-        try {
-            const res = await fetch('/api/subscriptions/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tier })
-            });
-
-            const json = await res.json();
-            if (!res.ok) throw new Error(json.error || 'Failed to initialize payment');
-
-            const payload = json.data;
-
-            // Create a hidden native form dynamically to POST via the browser
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = PAYFAST_URL;
-
-            Object.keys(payload).forEach(key => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = payload[key];
-                form.appendChild(input);
-            });
-
-            document.body.appendChild(form);
-            form.submit(); // Takes the user entirely to PayFast
-
-        } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : String(err));
-            setLoadingTier(null);
-        }
-    };
-
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center max-w-2xl mx-auto mb-16">
@@ -61,12 +14,6 @@ export default function SubscribePage() {
                     Increase your active limits, get a public storefront, and reach thousands of local coral buyers.
                 </p>
             </div>
-
-            {error && (
-                <div className="max-w-3xl mx-auto mb-8 bg-red-50 text-red-700 p-4 rounded-lg border border-red-200">
-                    {error}
-                </div>
-            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {/* FREE */}
