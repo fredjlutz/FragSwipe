@@ -6,9 +6,14 @@ import { env } from '../env';
  * WARNING: Never use this on the client or expose it to standard users.
  */
 export function createAdminClient() {
+    const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceKey) {
+        console.warn('⚠️ SUPABASE_SERVICE_ROLE_KEY is missing. Admin client will be non-functional.');
+    }
+
     return createSupabaseClient(
         env.NEXT_PUBLIC_SUPABASE_URL,
-        env.SUPABASE_SERVICE_ROLE_KEY,
+        serviceKey || '',
         {
             auth: {
                 autoRefreshToken: false,
