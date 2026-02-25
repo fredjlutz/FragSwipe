@@ -36,14 +36,18 @@ export async function middleware(request: NextRequest) {
         }
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
-
     const url = request.nextUrl;
     const path = url.pathname;
+    const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+
+    // console.log(`Middleware running for: ${path}`);
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // console.log(`User status for ${path}:`, !!user);
 
     // 1. Rate Limiting for Listing Creation API
     if (path === '/api/listings/create' && request.method === 'POST') {
-        const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
         const now = Date.now();
         const windowData = rateLimitMap.get(ip);
 
@@ -62,16 +66,21 @@ export async function middleware(request: NextRequest) {
     }
 
     // If user is authenticated, we need to fetch their profile to check roles & ban status
-    // Caveat: Fetching DB on Edge per request is heavier, but strictly necessary for instant bans.
     if (user) {
-        const { data: profile } = await supabase
+        // console.log(`Checking profile in middleware for: ${user.id}`);
+        const { data: profile, error } = await supabase
             .from('profiles')
             .select('role, is_banned')
             .eq('id', user.id)
             .single();
 
+        if (error) {
+            // console.error(`Profile fetch error in middleware for ${user.id}:`, error.message);
+        }
+
         // 2. Ban Enforcement
         if (profile?.is_banned) {
+            // console.log(`User ${user.id} is banned, redirecting...`);
             // Force logout and redirect
             await supabase.auth.signOut();
             const redirectUrl = request.nextUrl.clone();

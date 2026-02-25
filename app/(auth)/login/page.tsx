@@ -56,9 +56,13 @@ function LoginContent() {
                 if (!profile) {
                     console.log('Redirecting to onboarding');
                     router.push('/onboarding');
+                    // Safety reset in case navigation is intercepted/slow
+                    setTimeout(() => setLoading(false), 5000);
                 } else {
                     console.log('Redirecting to discover');
                     router.push('/discover');
+                    // Safety reset in case navigation is intercepted/slow
+                    setTimeout(() => setLoading(false), 5000);
                 }
             }
         } catch (err: unknown) {
