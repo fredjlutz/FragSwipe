@@ -54,15 +54,11 @@ function LoginContent() {
                 }
 
                 if (!profile) {
-                    console.log('Redirecting to onboarding');
-                    router.push('/onboarding');
-                    // Safety reset in case navigation is intercepted/slow
-                    setTimeout(() => setLoading(false), 5000);
+                    console.log('Redirecting to onboarding (full reload)');
+                    window.location.href = '/onboarding';
                 } else {
-                    console.log('Redirecting to discover');
-                    router.push('/discover');
-                    // Safety reset in case navigation is intercepted/slow
-                    setTimeout(() => setLoading(false), 5000);
+                    console.log('Redirecting to discover (full reload)');
+                    window.location.href = '/discover';
                 }
             }
         } catch (err: unknown) {
