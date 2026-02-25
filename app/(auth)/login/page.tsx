@@ -54,7 +54,7 @@ function LoginContent() {
                     router.push('/discover');
                 }
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Unexpected login error:', err);
             setErrorMsg('An unexpected error occurred. Please try again.');
             setLoading(false);
@@ -84,7 +84,7 @@ function LoginContent() {
             } else {
                 setSuccessMsg('Check your email to confirm your new account!');
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Unexpected signup error:', err);
             setErrorMsg('An unexpected error occurred during signup.');
         } finally {
@@ -110,7 +110,7 @@ function LoginContent() {
             } else {
                 setSuccessMsg('Password reset link sent! Check your email.');
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Unexpected forgot password error:', err);
             setErrorMsg('An unexpected error occurred.');
         } finally {
