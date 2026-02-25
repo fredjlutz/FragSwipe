@@ -24,13 +24,15 @@ function LoginContent() {
         setErrorMsg('');
 
         try {
+            console.log('Attempting login for:', email);
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
+            console.log('Login response received:', { user: !!data.user, error: error?.message });
+
             if (error) {
-                console.error('Login error:', error);
                 setErrorMsg(error.message);
                 setLoading(false);
                 return;
@@ -38,19 +40,24 @@ function LoginContent() {
 
             // Check if they have a profile
             if (data.user) {
+                console.log('Checking profile for user:', data.user.id);
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('id')
                     .eq('id', data.user.id)
                     .single();
 
+                console.log('Profile check result:', { hasProfile: !!profile, error: profileError?.message });
+
                 if (profileError && profileError.code !== 'PGRST116') {
                     console.error('Profile check error:', profileError);
                 }
 
                 if (!profile) {
+                    console.log('Redirecting to onboarding');
                     router.push('/onboarding');
                 } else {
+                    console.log('Redirecting to discover');
                     router.push('/discover');
                 }
             }
