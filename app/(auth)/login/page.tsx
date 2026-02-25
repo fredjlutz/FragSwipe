@@ -66,13 +66,29 @@ function LoginContent() {
         if (error) {
             setErrorMsg(error.message);
         } else if (data.session) {
-            // Auto login logic: if email confirmation is disabled in Supabase, 
-            // the user gets a session immediately upon signup.
             setSuccessMsg('Account created successfully!');
             router.push('/onboarding');
         } else {
-            // Still waiting on email confirmation
             setSuccessMsg('Check your email to confirm your new account!');
+        }
+        setLoading(false);
+    };
+
+    const handleForgotPassword = async () => {
+        if (!email) {
+            setErrorMsg('Please enter your email address first.');
+            return;
+        }
+        setLoading(true);
+        setErrorMsg('');
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/api/auth/callback?next=/reset-password`,
+        });
+
+        if (error) {
+            setErrorMsg(error.message);
+        } else {
+            setSuccessMsg('Password reset link sent! Check your email.');
         }
         setLoading(false);
     };
@@ -116,9 +132,18 @@ function LoginContent() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">
-                            Password
-                        </label>
+                        <div className="flex justify-between items-center mb-1">
+                            <label className="block text-sm font-medium text-gray-700" htmlFor="password">
+                                Password
+                            </label>
+                            <button
+                                type="button"
+                                onClick={handleForgotPassword}
+                                className="text-xs text-blue-600 hover:text-blue-500 font-medium"
+                            >
+                                Forgot password?
+                            </button>
+                        </div>
                         <input
                             id="password"
                             type="password"
@@ -146,8 +171,8 @@ function LoginContent() {
                         Create Account
                     </button>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

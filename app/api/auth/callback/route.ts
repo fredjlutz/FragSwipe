@@ -22,8 +22,8 @@ export async function GET(request: Request) {
                 .eq('id', data.user.id)
                 .single();
 
-            // Fast path: if profile exists, send them to the intended next path
-            if (profile) {
+            // Fast path: if profile exists or we're on a password reset flow, send them to the intended next path
+            if (profile || next === '/reset-password') {
                 return NextResponse.redirect(`${origin}${next}`);
             }
 
