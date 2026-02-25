@@ -27,6 +27,7 @@ CREATE POLICY "Admins manage blocklist" ON moderation_blocklist FOR ALL USING (i
 
 -- 4. Add missing INSERT policy for profiles
 -- New users MUST be able to create their own profile during onboarding
+DROP POLICY IF EXISTS "Users can create own profile" ON profiles;
 CREATE POLICY "Users can create own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
 
