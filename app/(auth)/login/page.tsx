@@ -23,30 +23,41 @@ function LoginContent() {
         setLoading(true);
         setErrorMsg('');
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        if (error) {
-            setErrorMsg(error.message);
-            setLoading(false);
-            return;
-        }
-
-        // Check if they have a profile
-        if (data.user) {
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('id')
-                .eq('id', data.user.id)
-                .single();
-
-            if (!profile) {
-                router.push('/onboarding');
-            } else {
-                router.push('/discover');
+            if (error) {
+                console.error('Login error:', error);
+                setErrorMsg(error.message);
+                setLoading(false);
+                return;
             }
+
+            // Check if they have a profile
+            if (data.user) {
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (profileError && profileError.code !== 'PGRST116') {
+                    console.error('Profile check error:', profileError);
+                }
+
+                if (!profile) {
+                    router.push('/onboarding');
+                } else {
+                    router.push('/discover');
+                }
+            }
+        } catch (err: any) {
+            console.error('Unexpected login error:', err);
+            setErrorMsg('An unexpected error occurred. Please try again.');
+            setLoading(false);
         }
     };
 
@@ -55,23 +66,30 @@ function LoginContent() {
         setLoading(true);
         setErrorMsg('');
 
-        const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                emailRedirectTo: `${window.location.origin}/api/auth/callback`,
-            }
-        });
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+                }
+            });
 
-        if (error) {
-            setErrorMsg(error.message);
-        } else if (data.session) {
-            setSuccessMsg('Account created successfully!');
-            router.push('/onboarding');
-        } else {
-            setSuccessMsg('Check your email to confirm your new account!');
+            if (error) {
+                console.error('Signup error:', error);
+                setErrorMsg(error.message);
+            } else if (data.session) {
+                setSuccessMsg('Account created successfully!');
+                router.push('/onboarding');
+            } else {
+                setSuccessMsg('Check your email to confirm your new account!');
+            }
+        } catch (err: any) {
+            console.error('Unexpected signup error:', err);
+            setErrorMsg('An unexpected error occurred during signup.');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleForgotPassword = async () => {
@@ -81,16 +99,23 @@ function LoginContent() {
         }
         setLoading(true);
         setErrorMsg('');
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/api/auth/callback?next=/reset-password`,
-        });
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/api/auth/callback?next=/reset-password`,
+            });
 
-        if (error) {
-            setErrorMsg(error.message);
-        } else {
-            setSuccessMsg('Password reset link sent! Check your email.');
+            if (error) {
+                console.error('Reset password error:', error);
+                setErrorMsg(error.message);
+            } else {
+                setSuccessMsg('Password reset link sent! Check your email.');
+            }
+        } catch (err: any) {
+            console.error('Unexpected forgot password error:', err);
+            setErrorMsg('An unexpected error occurred.');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
