@@ -140,9 +140,9 @@ export default function MyListingsPage() {
                                             </button>
                                         )}
 
-                                        <button className="p-2 hover:bg-blue-100 hover:text-blue-700 rounded transition">
+                                        <Link href={`/sell/${listing.id}`} className="p-2 hover:bg-blue-100 hover:text-blue-700 rounded transition">
                                             <Edit3 className="w-4 h-4" />
-                                        </button>
+                                        </Link>
 
                                         <button onClick={() => { if (confirm('Are you sure you want to permanently delete this listing?')) updateStatus(listing.id, 'removed') }} className="p-2 hover:bg-red-100 hover:text-red-700 rounded transition">
                                             <Trash2 className="w-4 h-4" />

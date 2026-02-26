@@ -52,7 +52,7 @@ export async function GET(request: Request) {
                 .order('display_order', { ascending: true }),
             supabase
                 .from('profiles')
-                .select('id, whatsapp_number')
+                .select('id, whatsapp_number, full_name')
                 .in('id', sellerIds)
         ]);
 
@@ -64,14 +64,20 @@ export async function GET(request: Request) {
         if (imagesData) {
             imagesData.forEach((img: { listing_id: string; storage_path: string }) => {
                 if (!imagesMap[img.listing_id]) imagesMap[img.listing_id] = [];
-                const { data } = supabase.storage.from('listing_images').getPublicUrl(img.storage_path);
-                imagesMap[img.listing_id].push(data.publicUrl);
+                if (img.storage_path.startsWith('http')) {
+                    imagesMap[img.listing_id].push(img.storage_path);
+                } else {
+                    const { data } = supabase.storage.from('listing_images').getPublicUrl(img.storage_path);
+                    imagesMap[img.listing_id].push(data.publicUrl);
+                }
             });
         }
 
         const whatsappMap: Record<string, string> = {};
-        profilesData.forEach((p: { id: string; whatsapp_number: string }) => {
+        const nameMap: Record<string, string> = {};
+        profilesData.forEach((p: { id: string; whatsapp_number: string; full_name: string }) => {
             whatsappMap[p.id] = p.whatsapp_number;
+            nameMap[p.id] = p.full_name;
         });
 
         // 3. SECURE MAPPING
@@ -117,6 +123,7 @@ export async function GET(request: Request) {
                 distance_km: calcDistance,
                 images: imagesMap[listing.id] || [],
                 seller_whatsapp: whatsappMap[listing.seller_id] || '',
+                seller_name: nameMap[listing.seller_id] || 'Unknown Seller',
                 created_at: listing.created_at
             };
         });

@@ -145,6 +145,8 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
                     <div className="flex items-center text-sm text-gray-500 mt-1">
                         <MapPin className="w-3.5 h-3.5 mr-1" />
                         {listing.neighbourhood} ({listing.distance_km} km away)
+                        <span className="mx-2">•</span>
+                        {listing.seller_name}
                     </div>
 
                     <div className="mt-2 text-sm text-gray-600 line-clamp-2">

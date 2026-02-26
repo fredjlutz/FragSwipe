@@ -14,6 +14,7 @@ export type SwipeListing = {
     distance_km: number;
     images: string[];
     seller_whatsapp: string;
+    seller_name: string;
     created_at: string;
 };
 

@@ -38,7 +38,7 @@ export async function POST(request: Request) {
             const { error: favError } = await supabase
                 .from('favourites')
                 .insert({
-                    user_id: session.user.id,
+                    buyer_id: session.user.id,
                     listing_id,
                 });
 

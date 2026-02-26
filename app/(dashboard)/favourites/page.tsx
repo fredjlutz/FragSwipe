@@ -83,7 +83,7 @@ export default function FavouritesPage() {
             listing_images ( storage_path )
           )
         `)
-                .eq('user_id', session.user.id)
+                .eq('buyer_id', session.user.id)
                 .order('created_at', { ascending: false });
 
             if (data) {
@@ -112,6 +112,7 @@ export default function FavouritesPage() {
     // Helper to grab the first image reliably
     const getCoverImageUri = (images: { storage_path: string }[]) => {
         if (!images || images.length === 0) return 'https://via.placeholder.com/300?text=No+Image';
+        if (images[0].storage_path.startsWith('http')) return images[0].storage_path;
         const { data } = supabase.storage.from('listing_images').getPublicUrl(images[0].storage_path);
         return data.publicUrl;
     };
