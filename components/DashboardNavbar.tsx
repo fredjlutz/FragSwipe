@@ -62,13 +62,13 @@ export default function DashboardNavbar() {
                                 </Link>
                             );
                         })}
-                        <Link
+                        <a
                             href="/api/auth/signout"
                             className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
                         >
                             <LogOut className="w-4 h-4" />
                             Sign out
-                        </Link>
+                        </a>
                     </div>
 
                     {/* Mobile menu button */}
@@ -112,13 +112,13 @@ export default function DashboardNavbar() {
                         })}
                     </div>
                     <div className="pt-4 pb-3 border-t border-gray-100">
-                        <Link
+                        <a
                             href="/api/auth/signout"
                             className="flex items-center gap-3 px-5 py-3 text-base font-semibold text-red-600 hover:bg-red-50 transition-colors"
                         >
                             <LogOut className="w-5 h-5" />
                             Sign out
-                        </Link>
+                        </a>
                     </div>
                 </div>
             )}

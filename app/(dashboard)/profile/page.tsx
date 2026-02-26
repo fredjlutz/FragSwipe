@@ -299,13 +299,13 @@ export default function ProfilePage() {
 
                 {/* Logout Action */}
                 <div className="mt-8 flex justify-center pb-12">
-                    <Link
+                    <a
                         href="/api/auth/signout"
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 font-bold transition-colors"
                     >
                         <LogOut className="w-5 h-5" />
                         Sign Out of FragSwipe
-                    </Link>
+                    </a>
                 </div>
 
             </div>
