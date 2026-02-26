@@ -2,15 +2,16 @@
 
 const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;
     style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https://*.supabase.co https://maps.googleapis.com;
+    img-src 'self' blob: data: https://*.supabase.co https://maps.googleapis.com https://www.payfast.co.za;
     font-src 'self' data:;
     object-src 'none';
     base-uri 'self';
     form-action 'self' https://www.payfast.co.za https://sandbox.payfast.co.za https://fragswipe.co.za;
     frame-ancestors 'none';
     connect-src 'self' https://*.supabase.co https://maps.googleapis.com wss://*.supabase.co;
+    worker-src 'self' blob:;
 `;
 
 const nextConfig = {
@@ -43,7 +44,7 @@ const nextConfig = {
                     },
                     {
                         key: 'Permissions-Policy',
-                        value: 'geolocation=(), camera=(), microphone=()',
+                        value: 'geolocation=(self), camera=(), microphone=()',
                     }
                 ],
             },

@@ -19,10 +19,6 @@ export async function GET(request: Request) {
         const radiusStr = searchParams.get('radius') || '10';
         const categoryStr = searchParams.get('category');
 
-        if (!latStr || !lngStr) {
-            return NextResponse.json({ error: 'Latitude and longitude are required' }, { status: 400 });
-        }
-
         const userLat = latStr ? parseFloat(latStr) : null;
         const userLng = lngStr ? parseFloat(lngStr) : null;
         const radiusKm = parseInt(radiusStr, 10);
