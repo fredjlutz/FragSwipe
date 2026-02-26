@@ -23,8 +23,8 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Latitude and longitude are required' }, { status: 400 });
         }
 
-        const userLat = parseFloat(latStr);
-        const userLng = parseFloat(lngStr);
+        const userLat = latStr ? parseFloat(latStr) : null;
+        const userLng = lngStr ? parseFloat(lngStr) : null;
         const radiusKm = parseInt(radiusStr, 10);
 
         // 1. Execute PostGIS RPC to fetch listings
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 
         if (rpcError) {
             console.error('RPC Error:', rpcError);
-            throw new Error('Failed to fetch nearby listings');
+            throw new Error('Failed to fetch listings');
         }
 
         if (!rawListings || rawListings.length === 0) {
@@ -81,8 +81,9 @@ export async function GET(request: Request) {
         // 3. SECURE MAPPING
         const mappedListings = rawListings.map((listing: { id: string; seller_id: string; title: string; description: string; price: number; category: string; tags: string[]; neighbourhood: string; location: string | { coordinates: [number, number] } | null; created_at: string; }) => {
             let calcDistance = 0;
-            let targetLat = userLat;
-            let targetLng = userLng;
+            let targetLat = 0;
+            let targetLng = 0;
+            let coordinatesAvailable = false;
 
             if (listing.location) {
                 if (typeof listing.location === 'string') {
@@ -90,18 +91,22 @@ export async function GET(request: Request) {
                     if (match && match.length >= 2) {
                         targetLng = parseFloat(match[0]);
                         targetLat = parseFloat(match[1]);
+                        coordinatesAvailable = true;
                     }
                 } else if (listing.location.coordinates) {
                     targetLng = listing.location.coordinates[0];
                     targetLat = listing.location.coordinates[1];
+                    coordinatesAvailable = true;
                 }
             }
 
-            const distanceMeters = getDistance(
-                { latitude: userLat, longitude: userLng },
-                { latitude: targetLat, longitude: targetLng }
-            );
-            calcDistance = Math.round(distanceMeters / 1000 * 10) / 10;
+            if (coordinatesAvailable && userLat !== null && userLng !== null) {
+                const distanceMeters = getDistance(
+                    { latitude: userLat, longitude: userLng },
+                    { latitude: targetLat, longitude: targetLng }
+                );
+                calcDistance = Math.round(distanceMeters / 1000 * 10) / 10;
+            }
 
             // Only return whitelisted safe fields
             return {

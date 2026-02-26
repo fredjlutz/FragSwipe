@@ -22,37 +22,19 @@ export default function DiscoverPage() {
         category: filterCategory || undefined,
     });
 
-    if (geoLoading) {
-        return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center">
-                <div className="animate-pulse bg-blue-100 p-4 rounded-full mb-4">
-                    <Map className="w-8 h-8 text-blue-600" />
-                </div>
-                <p className="text-gray-500 font-medium">Resolving your location for local corals...</p>
-            </div>
-        );
-    }
-
-    if (geoError) {
-        return (
-            <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 text-center">
-                <div className="bg-red-50 p-6 rounded-2xl max-w-sm">
-                    <Settings2 className="w-10 h-10 text-red-500 mx-auto mb-4" />
-                    <h2 className="text-lg font-bold text-gray-900">Location Required</h2>
-                    <p className="mt-2 text-sm text-gray-600">{geoError}</p>
-                    <p className="mt-4 text-xs text-gray-500">
-                        FragSwipe needs your location to find nearby listings securely without sharing your exact address. Please enable it in your browser.
-                    </p>
-                </div>
-            </div>
-        );
-    }
+    // We no longer block on geoError or geoLoading, just show a hint in the UI if it exists
+    const isGlobalFeed = !!geoError || latitude === null;
 
     return (
         <div className="relative min-h-[calc(100vh-64px)] overflow-hidden flex flex-col items-center bg-gray-50">
             {/* Top Bar */}
             <div className="w-full max-w-md p-4 flex justify-between items-center z-10">
-                <h1 className="text-2xl font-black text-gray-900 tracking-tight">Discover</h1>
+                <div>
+                    <h1 className="text-2xl font-black text-gray-900 tracking-tight">Discover</h1>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mt-0.5">
+                        {isGlobalFeed ? 'Showing: National Feed' : `Showing: Within ${filterRadius}km`}
+                    </p>
+                </div>
                 <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`p-2 rounded-full transition-colors ${showFilters ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 shadow-sm border border-gray-100 hover:bg-gray-50'}`}

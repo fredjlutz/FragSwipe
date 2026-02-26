@@ -32,16 +32,19 @@ export function useSwipeQueue({ latitude, longitude, radiusKm = 10, category }: 
 
     // Fetch batch of new cards securely from the Next.js API route
     const fetchBatch = useCallback(async () => {
-        if (!latitude || !longitude || loading || !hasMore) return;
+        if (loading || !hasMore) return;
 
         setLoading(true);
         setError(null);
 
         try {
-            let url = `/api/discover?lat=${latitude}&lng=${longitude}&radius=${radiusKm}`;
-            if (category) url += `&category=${category}`;
+            const params = new URLSearchParams();
+            if (latitude !== null) params.append('lat', latitude.toString());
+            if (longitude !== null) params.append('lng', longitude.toString());
+            params.append('radius', radiusKm.toString());
+            if (category) params.append('category', category);
 
-            const res = await fetch(url);
+            const res = await fetch(`/api/discover?${params.toString()}`);
             const data = await res.json();
 
             if (!res.ok) throw new Error(data.error || 'Failed to fetch queue');
@@ -58,12 +61,12 @@ export function useSwipeQueue({ latitude, longitude, radiusKm = 10, category }: 
         }
     }, [latitude, longitude, radiusKm, category, loading, hasMore]);
 
-    // Initial load when location is resolved
+    // Initial load when component mounts or location/filters change
     useEffect(() => {
-        if (latitude && longitude && queue.length === 0 && hasMore && !loading) {
+        if (queue.length === 0 && hasMore && !loading) {
             fetchBatch();
         }
-    }, [latitude, longitude, fetchBatch, queue.length, hasMore, loading]);
+    }, [latitude, longitude, radiusKm, category, fetchBatch, queue.length, hasMore, loading]);
 
     // Auto-refetch when queue runs low to prevent loading screens mid-swipe
     useEffect(() => {
