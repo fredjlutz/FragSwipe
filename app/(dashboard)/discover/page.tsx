@@ -26,20 +26,17 @@ export default function DiscoverPage() {
     const isGlobalFeed = !!geoError || latitude === null;
 
     return (
-        <div className="relative min-h-[calc(100vh-64px)] overflow-hidden flex flex-col items-center bg-gray-50">
-            {/* Top Bar */}
-            <div className="w-full max-w-md p-4 flex justify-between items-center z-10">
-                <div>
-                    <h1 className="text-2xl font-black text-gray-900 tracking-tight">Discover</h1>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mt-0.5">
-                        {isGlobalFeed ? 'Showing: National Feed' : `Showing: Within ${filterRadius}km`}
-                    </p>
-                </div>
+        <div className="relative min-h-[calc(100dvh-64px)] flex flex-col items-center bg-gray-50">
+            {/* Top Bar - Filter Only */}
+            <div className="w-full max-w-md p-4 flex justify-end items-center z-10">
                 <button
                     onClick={() => setShowFilters(!showFilters)}
-                    className={`p-2 rounded-full transition-colors ${showFilters ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 shadow-sm border border-gray-100 hover:bg-gray-50'}`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full transition-colors ${showFilters ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 shadow-sm border border-gray-100 hover:bg-gray-50'}`}
                 >
-                    <Filter className="w-5 h-5" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                        {isGlobalFeed ? 'National' : `${filterRadius}km`}
+                    </span>
+                    <Filter className="w-4 h-4" />
                 </button>
             </div>
 
@@ -81,7 +78,7 @@ export default function DiscoverPage() {
             )}
 
             {/* Swipe Stack Container */}
-            <div className="flex-1 w-full flex items-center justify-center relative px-4 pb-20 mt-4 md:mt-10">
+            <div className="flex-1 w-full flex items-center justify-center relative px-4 pb-12 mt-2 md:mt-6">
                 {queueError ? (
                     <div className="text-red-500 text-center bg-red-50 p-4 rounded-xl shadow-sm border border-red-100 max-w-sm">
                         Failed to load queue: {queueError}
@@ -104,7 +101,7 @@ export default function DiscoverPage() {
                         </button>
                     </div>
                 ) : (
-                    <div className="relative w-full max-w-sm h-[600px]">
+                    <div className="relative w-full max-w-sm h-[540px]">
                         {queueLoading && queue.length === 0 && (
                             <div className="absolute inset-0 flex items-center justify-center bg-white rounded-3xl shadow-md border border-gray-100 z-0">
                                 <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>

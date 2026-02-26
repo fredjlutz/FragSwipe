@@ -74,11 +74,11 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
 
     const currentImage = listing.images.length > 0
         ? listing.images[currentImageIndex]
-        : 'https://via.placeholder.com/400x500?text=No+Image';
+        : null;
 
     return (
         <motion.div
-            className="absolute w-full h-[600px] max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing border border-gray-100"
+            className="absolute w-full h-[540px] max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing border border-gray-100"
             style={{ x, rotate, opacity }}
             drag={active ? "x" : false}
             dragConstraints={{ left: 0, right: 0 }}
@@ -87,12 +87,19 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
             whileTap={{ scale: 0.98 }}
         >
             {/* Image Carousel Area */}
-            <div className="relative h-2/3 bg-gray-200" onClick={nextImage}>
-                <img
-                    src={currentImage}
-                    alt={listing.title}
-                    className="w-full h-full object-cover pointer-events-none"
-                />
+            <div className="relative h-[65%] bg-gray-100" onClick={nextImage}>
+                {currentImage ? (
+                    <img
+                        src={currentImage}
+                        alt={listing.title}
+                        className="w-full h-full object-cover pointer-events-none"
+                    />
+                ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 text-gray-300">
+                        <MapPin className="w-12 h-12 mb-2 opacity-20" />
+                        <span className="text-xs font-bold uppercase tracking-widest opacity-40">No Image Available</span>
+                    </div>
+                )}
 
                 {/* Visual Swipe Indicators overlays */}
                 <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-6 border-4 border-green-500 rounded-lg px-4 py-2 text-green-500 font-black text-3xl rotate-[-15deg] pointer-events-none z-10">
@@ -124,7 +131,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
             </div>
 
             {/* Info Stack */}
-            <div className="p-5 h-1/3 flex flex-col justify-between">
+            <div className="p-4 h-[35%] flex flex-col justify-between">
                 <div>
                     <div className="flex justify-between items-start">
                         <h2 className="text-xl font-bold text-gray-900 leading-tight">
