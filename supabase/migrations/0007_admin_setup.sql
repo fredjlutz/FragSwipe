@@ -1,9 +1,9 @@
--- Migration to ensure fred@capereef.club is always treated as an admin
+-- Migration to ensure fred@capereef.club and info@capereef.club are always treated as admins
 -- This function can be called to sync the role manually or via trigger
 CREATE OR REPLACE FUNCTION public.handle_admin_role_sync()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.email = 'fred@capereef.club' THEN
+    IF NEW.email IN ('fred@capereef.club', 'info@capereef.club') THEN
         UPDATE public.profiles SET role = 'admin' WHERE id = NEW.id;
     END IF;
     RETURN NEW;
@@ -16,12 +16,12 @@ CREATE TRIGGER on_auth_user_admin_check
 AFTER INSERT ON auth.users
 FOR EACH ROW EXECUTE FUNCTION public.handle_admin_role_sync();
 
--- Also update existing profile if it exists
+-- Also update existing profiles if they exist
 DO $$
 BEGIN
     UPDATE public.profiles 
     SET role = 'admin' 
     WHERE id IN (
-        SELECT id FROM auth.users WHERE email = 'fred@capereef.club'
+        SELECT id FROM auth.users WHERE email IN ('fred@capereef.club', 'info@capereef.club')
     );
 END $$;

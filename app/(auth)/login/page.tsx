@@ -112,10 +112,15 @@ function LoginContent() {
             });
 
             if (error) {
-                console.error('Reset password error:', error);
-                setErrorMsg(error.message);
+                console.error('Detailed Reset password error:', {
+                    message: error.message,
+                    status: error.status,
+                    name: error.name,
+                    error: error
+                });
+                setErrorMsg(`Error: ${error.message} (Check console for details)`);
             } else {
-                setSuccessMsg('Password reset link sent! Check your email.');
+                setSuccessMsg('A reset link has been triggered! Please check your email (including spam). If it doesn\'t arrive, please ensure "Redirect URLs" in Supabase include ' + window.location.origin + ' and your "From Email" matches your Resend verified domain.');
             }
         } catch (err: unknown) {
             console.error('Unexpected forgot password error:', err);
