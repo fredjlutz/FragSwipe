@@ -48,7 +48,12 @@ export function useSwipeQueue({ latitude, longitude, radiusKm = 10, category }: 
             const res = await fetch(`/api/discover?${params.toString()}`);
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.error || 'Failed to fetch queue');
+            if (!res.ok) {
+                if (res.status === 401) {
+                    setHasMore(false);
+                }
+                throw new Error(data.error || 'Failed to fetch queue');
+            }
 
             if (data.data && data.data.length > 0) {
                 setQueue((prev) => [...prev, ...data.data]);
@@ -57,6 +62,9 @@ export function useSwipeQueue({ latitude, longitude, radiusKm = 10, category }: 
             }
         } catch (err: any) {
             setError(err.message);
+            if (err.message === 'Unauthorized') {
+                setHasMore(false);
+            }
         } finally {
             setLoading(false);
         }
