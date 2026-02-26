@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { User, Phone, MapPin, Save, Loader2, CheckCircle2, AlertCircle, KeyRound, LogOut } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import Link from 'next/link';
 
 export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
