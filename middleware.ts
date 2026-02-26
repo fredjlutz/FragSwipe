@@ -10,9 +10,7 @@ const MAX_REQUESTS_PER_WINDOW = 10;
 
 export async function middleware(request: NextRequest) {
     let response = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
+        request,
     });
 
     const supabase = createServerClient(
@@ -42,15 +40,10 @@ export async function middleware(request: NextRequest) {
 
     console.log(`Middleware running for: ${path}`);
 
-    const { data: { user } } = await supabase.auth.getUser();
-
-    console.log(`User status for ${path}:`, !!user);
-
-    // 1. Rate Limiting for Listing Creation API
+    // Rate Limiting for Listing Creation API
     if (path === '/api/listings/create' && request.method === 'POST') {
         const now = Date.now();
         const windowData = rateLimitMap.get(ip);
-
         if (windowData) {
             if (now - windowData.start > RATE_LIMIT_WINDOW_MS) {
                 rateLimitMap.set(ip, { count: 1, start: now });
@@ -65,48 +58,49 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // If user is authenticated, we need to fetch their profile to check roles & ban status
+    // AUTH CHECK
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError) {
+        console.error(`Middleware auth error for ${path}:`, authError.message);
+    }
+    console.log(`User status for ${path}:`, !!user);
+
     if (user) {
         console.log(`User ${user.id} authenticated, checking profile...`);
-        const { data: profile, error } = await supabase
+        const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('role, is_banned')
             .eq('id', user.id)
             .single();
 
-        if (error) {
-            console.error(`Profile fetch error in middleware for ${user.id}:`, error.message);
+        if (profileError) {
+            console.error(`Profile fetch error in middleware for ${user.id}:`, profileError.message);
         }
 
         // 2. Ban Enforcement
         if (profile?.is_banned) {
             console.log(`User ${user.id} is banned, redirecting to login...`);
-            // Force logout and redirect
             await supabase.auth.signOut();
             const redirectUrl = request.nextUrl.clone();
             redirectUrl.pathname = '/login';
             redirectUrl.searchParams.set('banned', 'true');
-            // Create redirect response but ATTACH cookies from the 'response' object
+            const redirectResponse = NextResponse.redirect(redirectUrl);
+            // Ensure cookies (even the signout ones) are passed
+            response.cookies.getAll().forEach(c => redirectResponse.cookies.set(c.name, c.value, c));
+            return redirectResponse;
+        }
+
+        // 3. Admin & Auth Page Guards
+        if (path.startsWith('/admin') && profile?.role !== 'admin') {
+            const redirectUrl = request.nextUrl.clone();
+            redirectUrl.pathname = '/discover';
             const redirectResponse = NextResponse.redirect(redirectUrl);
             response.cookies.getAll().forEach(c => redirectResponse.cookies.set(c.name, c.value, c));
             return redirectResponse;
         }
 
-        // 3. Admin Route Guards
-        if (path.startsWith('/admin')) {
-            if (profile?.role !== 'admin') {
-                console.log(`User ${user.id} not admin, redirecting to discover...`);
-                const redirectUrl = request.nextUrl.clone();
-                redirectUrl.pathname = '/discover';
-                const redirectResponse = NextResponse.redirect(redirectUrl);
-                response.cookies.getAll().forEach(c => redirectResponse.cookies.set(c.name, c.value, c));
-                return redirectResponse;
-            }
-        }
-
-        // Auth redirect if trying to access auth pages when logged in
         if (path === '/login' || path === '/') {
-            console.log(`User ${user.id} at auth page, redirecting to discover...`);
             const redirectUrl = request.nextUrl.clone();
             redirectUrl.pathname = '/discover';
             const redirectResponse = NextResponse.redirect(redirectUrl);
@@ -115,7 +109,7 @@ export async function middleware(request: NextRequest) {
         }
 
     } else {
-        // 4. Protect private routes for unauthenticated users
+        // 4. Protect private routes
         const privateRoutes = ['/discover', '/sell', '/my-listings', '/favourites', '/subscribe', '/admin'];
         const isPrivate = privateRoutes.some(route => path.startsWith(route));
         if (isPrivate) {
