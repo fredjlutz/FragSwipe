@@ -38,7 +38,9 @@ export async function middleware(request: NextRequest) {
     const path = url.pathname;
     const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
-    console.log(`Middleware running for: ${path}`);
+    const allCookies = request.cookies.getAll();
+    console.log(`Middleware running for: ${path}. Cookies: ${allCookies.length}`);
+    // console.log('Cookie names:', allCookies.map(c => c.name).join(', '));
 
     // Rate Limiting for Listing Creation API
     if (path === '/api/listings/create' && request.method === 'POST') {
@@ -62,7 +64,11 @@ export async function middleware(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError) {
-        console.error(`Middleware auth error for ${path}:`, authError.message);
+        console.error(`Middleware auth error for ${path}:`, {
+            message: authError.message,
+            status: (authError as any).status,
+            name: authError.name
+        });
     }
     console.log(`User status for ${path}:`, !!user);
 
