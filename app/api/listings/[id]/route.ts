@@ -27,6 +27,36 @@ export async function PATCH(
                 return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
             }
 
+            // If they are trying to activate a listing, check their tier limits
+            if (body.status === 'active') {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('subscription_tier')
+                    .eq('id', session.user.id)
+                    .single();
+
+                const tier = profile?.subscription_tier || 'free';
+
+                const { count, error: countError } = await supabase
+                    .from('listings')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('seller_id', session.user.id)
+                    .eq('status', 'active');
+
+                if (countError) {
+                    throw countError;
+                }
+
+                const { isListingCreationAllowed, TIER_LIMITS } = await import('@/lib/limits');
+                if (!isListingCreationAllowed(count || 0, tier)) {
+                    const limit = TIER_LIMITS[tier] || TIER_LIMITS.free;
+                    return NextResponse.json(
+                        { error: `Tier limit reached. Your plan allows up to ${limit} active listings. Please upgrade to activate this listing.` },
+                        { status: 403 }
+                    );
+                }
+            }
+
             const { data, error } = await supabase
                 .from('listings')
                 .update({ status: body.status })

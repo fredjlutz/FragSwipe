@@ -17,17 +17,31 @@ type Listing = {
 export default function MyListingsPage() {
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
+    const [tierLimitReached, setTierLimitReached] = useState(false);
+    const [userTierLimit, setUserTierLimit] = useState(0);
     const supabase = createClient();
 
     useEffect(() => {
-        fetchListings();
+        fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const fetchListings = async () => {
+    const fetchData = async () => {
         setLoading(true);
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
+            // Fetch profile tier
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('subscription_tier')
+                .eq('id', session.user.id)
+                .single();
+
+            const tier = profile?.subscription_tier || 'free';
+            const { TIER_LIMITS } = await import('@/lib/limits');
+            const limit = TIER_LIMITS[tier] || TIER_LIMITS.free;
+            setUserTierLimit(limit);
+
             const { data } = await supabase
                 .from('listings')
                 .select('id, title, price, status, created_at, moderation_flag')
@@ -35,7 +49,11 @@ export default function MyListingsPage() {
                 .neq('status', 'removed') // Don't show hard removed items
                 .order('created_at', { ascending: false });
 
-            if (data) setListings(data);
+            if (data) {
+                setListings(data);
+                const activeCount = data.filter(l => l.status === 'active').length;
+                setTierLimitReached(activeCount > limit);
+            }
         }
         setLoading(false);
     };
@@ -47,7 +65,7 @@ export default function MyListingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus }),
             });
-            if (res.ok) fetchListings();
+            if (res.ok) fetchData();
         } catch (e) {
             console.error(e);
         }
@@ -95,6 +113,21 @@ export default function MyListingsPage() {
                 </div>
             </div>
 
+            {tierLimitReached && !loading && (
+                <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 flex items-start">
+                    <div className="mr-3 mt-0.5">
+                        <Tag className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-sm">Limit Exceeded</h3>
+                        <p className="text-sm mt-1">
+                            You have more active listings than your current plan allows (max {userTierLimit}).
+                            Please pause some listings or <Link href="/subscribe" className="underline font-bold">upgrade your subscription</Link>.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {loading ? (
                 <div className="text-center py-12">
                     <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
@@ -135,7 +168,18 @@ export default function MyListingsPage() {
                                             </>
                                         )}
                                         {listing.status === 'paused' && (
-                                            <button onClick={() => updateStatus(listing.id, 'active')} title="Reactivate" className="p-2 hover:bg-green-100 hover:text-green-700 rounded transition">
+                                            <button
+                                                onClick={() => {
+                                                    const activeCount = listings.filter(l => l.status === 'active').length;
+                                                    if (activeCount >= userTierLimit) {
+                                                        alert(`You have reached the maximum of ${userTierLimit} active listings for your tier. Please upgrade to reactivate.`);
+                                                        return;
+                                                    }
+                                                    updateStatus(listing.id, 'active');
+                                                }}
+                                                title="Reactivate"
+                                                className="p-2 hover:bg-green-100 hover:text-green-700 rounded transition"
+                                            >
                                                 <Play className="w-4 h-4" />
                                             </button>
                                         )}
