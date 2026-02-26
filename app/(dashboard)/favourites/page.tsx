@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Heart, MessageCircle, AlertCircle, ShoppingBag } from 'lucide-react';
+import { Heart, MessageCircle, AlertCircle, ShoppingBag, X } from 'lucide-react';
 
 type FavouriteListing = {
     id: string; // Favourites table ID
@@ -164,9 +164,9 @@ export default function FavouritesPage() {
                                             </h3>
                                             <button
                                                 onClick={() => removeFavourite(fav.id)}
-                                                className="text-gray-400 hover:text-red-500 p-1 -mr-1 transition"
+                                                className="text-gray-400 hover:text-red-500 p-1 -mr-1 transition title-remove-button"
                                             >
-                                                <Heart className="w-5 h-5 fill-current" />
+                                                <X className="w-5 h-5" />
                                             </button>
                                         </div>
                                         <p className={`text-blue-600 font-bold mt-1 ${!isAvailable && 'text-gray-400'}`}>

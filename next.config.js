@@ -4,7 +4,7 @@ const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;
     style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https://*.supabase.co https://maps.googleapis.com https://www.payfast.co.za;
+    img-src 'self' blob: data: https://*.supabase.co https://maps.googleapis.com https://www.payfast.co.za https://images.unsplash.com;
     font-src 'self' data:;
     object-src 'none';
     base-uri 'self';
