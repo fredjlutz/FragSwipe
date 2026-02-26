@@ -78,7 +78,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
 
     return (
         <motion.div
-            className="absolute w-full h-[540px] max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing border border-gray-100"
+            className="absolute w-full h-[540px] max-h-[82dvh] max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing border border-gray-100"
             style={{ x, rotate, opacity }}
             drag={active ? "x" : false}
             dragConstraints={{ left: 0, right: 0 }}
@@ -87,7 +87,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
             whileTap={{ scale: 0.98 }}
         >
             {/* Image Carousel Area */}
-            <div className="relative h-[65%] bg-gray-100" onClick={nextImage}>
+            <div className="relative h-[50%] bg-gray-100" onClick={nextImage}>
                 {currentImage ? (
                     <img
                         src={currentImage}
@@ -131,7 +131,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
             </div>
 
             {/* Info Stack */}
-            <div className="p-4 h-[35%] flex flex-col justify-between">
+            <div className="p-4 h-[50%] flex flex-col">
                 <div>
                     <div className="flex justify-between items-start">
                         <h2 className="text-xl font-bold text-gray-900 leading-tight">
@@ -164,7 +164,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
                 </div>
 
                 {/* Action Buttons Row */}
-                <div className="flex justify-evenly items-center mt-2 z-20">
+                <div className="flex justify-evenly items-center mt-auto pb-4 z-20">
                     <button
                         type="button"
                         onPointerDown={(e) => { e.stopPropagation(); handleManualSwipe('left'); }}

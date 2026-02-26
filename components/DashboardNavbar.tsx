@@ -11,7 +11,8 @@ import {
     List,
     Heart,
     CreditCard,
-    LogOut
+    LogOut,
+    UserCircle
 } from 'lucide-react';
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
     { name: 'Sell New', href: '/sell/new', icon: PlusSquare },
     { name: 'My Listings', href: '/my-listings', icon: List },
     { name: 'Favourites', href: '/favourites', icon: Heart },
+    { name: 'Profile', href: '/profile', icon: UserCircle },
     { name: 'Subscribe', href: '/subscribe', icon: CreditCard },
 ];
 
@@ -51,8 +53,8 @@ export default function DashboardNavbar() {
                                     key={item.name}
                                     href={item.href}
                                     className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${isActive
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                 >
                                     <Icon className="w-4 h-4" />
@@ -92,8 +94,8 @@ export default function DashboardNavbar() {
                                     href={item.href}
                                     onClick={() => setIsOpen(false)}
                                     className={`flex items-center gap-3 px-3 py-3 rounded-lg text-base font-semibold transition-colors ${isActive
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                                         }`}
                                 >
                                     <Icon className="w-5 h-5" />

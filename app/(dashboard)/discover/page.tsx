@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useSwipeQueue } from '@/hooks/useSwipeQueue';
 import ListingSwipeCard from '@/components/swipe/ListingSwipeCard';
-import { Filter, Ghost } from 'lucide-react';
+import { Filter, Ghost, UserCircle } from 'lucide-react';
 import { listingCategories } from '@/lib/validation/listingSchema';
+import Link from 'next/link';
 
 export default function DiscoverPage() {
     const { latitude, longitude, error: geoError } = useGeolocation();
@@ -27,8 +28,15 @@ export default function DiscoverPage() {
 
     return (
         <div className="relative min-h-[calc(100dvh-64px)] flex flex-col items-center bg-gray-50">
-            {/* Top Bar - Filter Only */}
-            <div className="w-full max-w-md p-4 flex justify-end items-center z-10">
+            {/* Top Bar - Filter & Profile */}
+            <div className="w-full max-w-md p-4 flex justify-end items-center gap-2 z-10">
+                <Link
+                    href="/profile"
+                    className="p-2.5 rounded-xl bg-white shadow-sm border border-gray-100 text-gray-600 hover:text-blue-600 hover:border-blue-100 transition-all"
+                    title="Profile"
+                >
+                    <UserCircle className="w-5 h-5" />
+                </Link>
                 <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`flex items-center gap-2 px-3 py-2 rounded-full transition-colors ${showFilters ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 shadow-sm border border-gray-100 hover:bg-gray-50'}`}
@@ -78,7 +86,7 @@ export default function DiscoverPage() {
             )}
 
             {/* Swipe Stack Container */}
-            <div className="flex-1 w-full flex items-center justify-center relative px-4 pb-12 mt-2 md:mt-6">
+            <div className="flex-1 w-full flex items-center justify-center relative px-4 pb-32 mt-2 md:mt-6">
                 {queueError ? (
                     <div className="text-red-500 text-center bg-red-50 p-4 rounded-xl shadow-sm border border-red-100 max-w-sm">
                         Failed to load queue: {queueError}
