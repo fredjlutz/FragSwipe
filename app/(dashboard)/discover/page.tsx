@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useSwipeQueue } from '@/hooks/useSwipeQueue';
 import ListingSwipeCard from '@/components/swipe/ListingSwipeCard';
@@ -91,54 +92,53 @@ export default function DiscoverPage() {
                     <div className="text-red-500 text-center bg-red-50 p-4 rounded-xl shadow-sm border border-red-100 max-w-sm">
                         Failed to load queue: {queueError}
                     </div>
-                ) : queue.length === 0 && !hasMore ? (
-                    <div className="text-center flex flex-col items-center p-8 bg-white shadow-xl border border-gray-100 rounded-3xl max-w-sm w-full">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                            <Ghost className="w-8 h-8 text-gray-400" />
-                        </div>
-                        <h2 className="text-xl font-bold text-gray-800">You&apos;re all caught up!</h2>
-                        <p className="text-gray-500 mt-2 text-sm leading-relaxed">
-                            There are no more active listings within {filterRadius}km.
-                            Check back later or expand your search radius.
-                        </p>
-                        <button
-                            onClick={() => setFilterRadius(prev => prev + 25)}
-                            className="mt-6 px-6 py-2.5 bg-blue-50 text-blue-700 font-semibold rounded-full hover:bg-blue-100 transition-colors text-sm border border-blue-200"
-                        >
-                            Expand to {filterRadius + 25}km
-                        </button>
-                    </div>
                 ) : (
-                    <div className="relative w-full max-w-sm h-[540px]">
-                        {queueLoading && queue.length === 0 && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-white rounded-3xl shadow-md border border-gray-100 z-0">
-                                <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
-                            </div>
-                        )}
-
-                        {/* 
-                Render from back to front so the first item is on top 
-                We reverse the array visually but keep the logic intact 
-            */}
-                        {[...queue].reverse().map((listing, index) => {
-                            const isActive = index === queue.length - 1; // Top card
-                            return (
-                                <div key={listing.id} className={!isActive ? "pointer-events-none" : ""}>
-                                    <ListingSwipeCard
-                                        listing={listing}
-                                        active={isActive}
-                                        onSwipe={swipe}
-                                        whatsappNumber={listing.seller_whatsapp || ''}
-                                        sellerWhatsApp={listing.seller_whatsapp}
-                                    />
+                    <div className="relative w-full max-w-sm h-[540px] flex items-center justify-center">
+                        <AnimatePresence mode="popLayout">
+                            {queue.length === 0 && !hasMore && (
+                                <div key="caught-up" className="text-center flex flex-col items-center p-8 bg-white shadow-xl border border-gray-100 rounded-3xl max-w-sm w-full animate-in fade-in zoom-in duration-300">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                        <Ghost className="w-8 h-8 text-gray-400" />
+                                    </div>
+                                    <h2 className="text-xl font-bold text-gray-800">You&apos;re all caught up!</h2>
+                                    <p className="text-gray-500 mt-2 text-sm leading-relaxed">
+                                        There are no more active listings within {filterRadius}km.
+                                        Check back later or expand your search radius.
+                                    </p>
+                                    <button
+                                        onClick={() => setFilterRadius(prev => prev + 25)}
+                                        className="mt-6 px-6 py-2.5 bg-blue-50 text-blue-700 font-semibold rounded-full hover:bg-blue-100 transition-colors text-sm border border-blue-200"
+                                    >
+                                        Expand to {filterRadius + 25}km
+                                    </button>
                                 </div>
-                            );
-                        })}
+                            )}
+
+                            {queueLoading && queue.length === 0 && (
+                                <div key="loading" className="absolute inset-0 flex items-center justify-center bg-white rounded-3xl shadow-md border border-gray-100 z-0">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-blue-600"></div>
+                                </div>
+                            )}
+
+                            {/* Render cards from back to front */}
+                            {[...queue].reverse().map((listing, index) => {
+                                const isActive = index === queue.length - 1; // Top card
+                                return (
+                                    <div key={listing.id} className={`absolute inset-0 ${!isActive ? "pointer-events-none" : "z-10"}`}>
+                                        <ListingSwipeCard
+                                            listing={listing}
+                                            active={isActive}
+                                            onSwipe={swipe}
+                                            whatsappNumber={listing.seller_whatsapp || ''}
+                                            sellerWhatsApp={listing.seller_whatsapp}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </AnimatePresence>
                     </div>
                 )}
             </div>
         </div>
     );
 }
-
-

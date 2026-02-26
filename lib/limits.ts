@@ -1,7 +1,7 @@
 export const TIER_LIMITS: Record<string, number> = {
-    free: 10,
-    pro: 10,
-    store: 10,
+    free: 5,
+    pro: 20,
+    store: 100,
 };
 
 export type SubscriptionTier = 'free' | 'pro' | 'store';

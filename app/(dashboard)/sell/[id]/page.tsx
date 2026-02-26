@@ -27,7 +27,7 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
         reset,
     } = useForm<ListingFormValues>({
         resolver: zodResolver(listingSchema),
-        defaultValues: { tags: [], price: 0, title: '', description: '', category: 'coral_sps' },
+        defaultValues: { tags: [], price: 0, title: '', description: '', category: 'coral_sps', pickup_available: true, delivery_available: false },
     });
 
     const supabase = createClient();
@@ -60,6 +60,8 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                     price: data.price,
                     category: data.category,
                     tags: data.tags || [],
+                    pickup_available: data.pickup_available,
+                    delivery_available: data.delivery_available,
                 });
             }
         };
@@ -270,6 +272,20 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
                         </div>
 
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Collection Methods</label>
+                            <div className="flex gap-4">
+                                <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-lg hover:bg-gray-50 flex-1">
+                                    <input type="checkbox" {...register('pickup_available')} className="w-4 h-4 text-blue-600 rounded" />
+                                    <span className="text-sm font-medium">Available for Pickup</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-lg hover:bg-gray-50 flex-1">
+                                    <input type="checkbox" {...register('delivery_available')} className="w-4 h-4 text-blue-600 rounded" />
+                                    <span className="text-sm font-medium">Available for Delivery</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div className="bg-yellow-50 p-3 rounded-md text-sm text-yellow-800 border border-yellow-200">
                             <p className="font-semibold">Important Rule:</p>
                             Please do not include HTTP links or URLs in the title or description. Listings containing URLs will be sent for manual review (Shadow Banned).
@@ -294,6 +310,14 @@ export default function EditListingPage({ params }: { params: { id: string } }) 
                             <div className="py-3 flex justify-between">
                                 <dt className="text-sm font-medium text-gray-500">Price</dt>
                                 <dd className="text-sm text-gray-900 font-semibold">R {watch('price')}</dd>
+                            </div>
+                            <div className="py-3">
+                                <dt className="text-sm font-medium text-gray-500 mb-1">Collection</dt>
+                                <dd className="text-sm text-gray-900 border border-gray-100 p-2 rounded bg-gray-50 flex gap-2">
+                                    {watch('pickup_available') && <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">Pickup</span>}
+                                    {watch('delivery_available') && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">Delivery</span>}
+                                    {!watch('pickup_available') && !watch('delivery_available') && <span className="text-red-500 italic">No collection method selected (invalid)</span>}
+                                </dd>
                             </div>
                             <div className="py-3">
                                 <dt className="text-sm font-medium text-gray-500 mb-1">Description</dt>

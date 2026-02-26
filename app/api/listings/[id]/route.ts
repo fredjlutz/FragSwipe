@@ -50,6 +50,8 @@ export async function PATCH(
                 price: parsedData.price,
                 category: parsedData.category,
                 tags: parsedData.tags,
+                pickup_available: parsedData.pickup_available,
+                delivery_available: parsedData.delivery_available,
             })
             .eq('id', id)
             .eq('seller_id', session.user.id)

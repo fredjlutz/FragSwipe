@@ -78,6 +78,7 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
 
     return (
         <motion.div
+            key={listing.id}
             className="absolute w-full h-[540px] max-h-[82dvh] max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing border border-gray-100"
             style={{ x, rotate, opacity }}
             drag={active ? "x" : false}
@@ -85,6 +86,12 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
             onDragEnd={handleDragEnd}
             animate={animControls}
             whileTap={{ scale: 0.98 }}
+            exit={{
+                x: x.get() > 20 ? 600 : (x.get() < -20 ? -600 : 0),
+                rotate: x.get() > 20 ? 20 : (x.get() < -20 ? -20 : 0),
+                opacity: 0,
+                transition: { duration: 0.3, ease: 'easeOut' }
+            }}
         >
             {/* Image Carousel Area */}
             <div className="relative h-[50%] bg-gray-100" onClick={nextImage}>

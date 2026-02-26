@@ -74,10 +74,17 @@ export function useSwipeQueue({ latitude, longitude, radiusKm = 10, category }: 
 
     // Initial load when component mounts or location/filters change
     useEffect(() => {
+        setQueue([]);
+        setHasMore(true);
+        setError(null);
+    }, [latitude, longitude, radiusKm, category]);
+
+    // Fetch batch when queue is empty
+    useEffect(() => {
         if (queue.length === 0 && hasMore && !loading) {
             fetchBatch();
         }
-    }, [latitude, longitude, radiusKm, category, fetchBatch, queue.length, hasMore, loading]);
+    }, [queue.length, hasMore, loading, fetchBatch]);
 
     // Auto-refetch when queue runs low to prevent loading screens mid-swipe
     useEffect(() => {

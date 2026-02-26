@@ -29,7 +29,7 @@ export default function SubscribePage() {
                         </li>
                         <li className="flex items-start">
                             <Check className="h-5 w-5 text-green-500 shrink-0" />
-                            <span className="ml-3 text-gray-600">List up to <strong className="text-gray-900">10 active items</strong></span>
+                            <span className="ml-3 text-gray-600">List up to <strong className="text-gray-900">5 active items</strong></span>
                         </li>
                         <li className="flex items-start">
                             <Check className="h-5 w-5 text-green-500 shrink-0" />
@@ -60,7 +60,7 @@ export default function SubscribePage() {
                         </li>
                         <li className="flex items-start">
                             <Check className="h-5 w-5 text-blue-500 shrink-0" />
-                            <span className="ml-3 text-gray-600">List up to <strong className="text-blue-700">50 active items</strong></span>
+                            <span className="ml-3 text-gray-600">List up to <strong className="text-blue-700">20 active items</strong></span>
                         </li>
                         <li className="flex items-start">
                             <Check className="h-5 w-5 text-blue-500 shrink-0" />
@@ -98,6 +98,10 @@ export default function SubscribePage() {
                         <li className="flex items-start">
                             <Check className="h-5 w-5 text-indigo-400 shrink-0" />
                             <span className="ml-3 text-gray-300">Custom Logo & Banner</span>
+                        </li>
+                        <li className="flex items-start">
+                            <Check className="h-5 w-5 text-indigo-400 shrink-0" />
+                            <span className="ml-3 text-gray-300"><strong className="text-indigo-300">Bulk Uploads</strong> with a spreadsheet</span>
                         </li>
                     </ul>
                     <button

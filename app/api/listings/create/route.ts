@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 import { listingSchema } from '@/lib/validation/listingSchema';
-import { isListingCreationAllowed } from '@/lib/limits';
+import { isListingCreationAllowed, TIER_LIMITS } from '@/lib/limits';
 import { ZodError } from 'zod';
 
 export async function POST(request: Request) {
@@ -46,8 +46,9 @@ export async function POST(request: Request) {
         }
 
         if (!isListingCreationAllowed(count || 0, tier)) {
+            const limit = TIER_LIMITS[tier] || TIER_LIMITS.free;
             return NextResponse.json(
-                { error: 'You have reached the maximum of 10 active listings. To list more, please email fred@capereef.club for an upgrade.' },
+                { error: `You have reached the maximum of ${limit} active listings. To list more, please email fred@capereef.club for an upgrade.` },
                 { status: 403 }
             );
         }
