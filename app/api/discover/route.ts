@@ -19,8 +19,36 @@ export async function GET(request: Request) {
         const radiusStr = searchParams.get('radius') || '10';
         const categoryStr = searchParams.get('category');
 
-        const userLat = latStr ? parseFloat(latStr) : null;
-        const userLng = lngStr ? parseFloat(lngStr) : null;
+        const userLatDevice = latStr ? parseFloat(latStr) : null;
+        const userLngDevice = lngStr ? parseFloat(lngStr) : null;
+
+        // Fetch user profile location as primary source of truth
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('location')
+            .eq('id', session.user.id)
+            .single();
+
+        let userLat = userLatDevice;
+        let userLng = userLngDevice;
+
+        // If profile has a location registered, prefer it over device GPS to prevent work/travel discrepancies
+        if (profile?.location && typeof profile.location === 'string') {
+            try {
+                const buf = Buffer.from(profile.location, 'hex');
+                if (buf.length === 25) {
+                    userLng = buf.readDoubleLE(9);
+                    userLat = buf.readDoubleLE(17);
+                }
+            } catch (e) {
+                console.error("Failed to parse profile EWKB location", e);
+            }
+        }
+
+        if (userLat === null || userLng === null) {
+            return NextResponse.json({ error: 'Location required to discover listings' }, { status: 400 });
+        }
+
         const radiusKm = parseInt(radiusStr, 10);
 
         // 1. Execute PostGIS RPC to fetch listings
@@ -89,11 +117,17 @@ export async function GET(request: Request) {
 
             if (listing.location) {
                 if (typeof listing.location === 'string') {
-                    const match = listing.location.match(/[-\d\.]+/g);
-                    if (match && match.length >= 2) {
-                        targetLng = parseFloat(match[0]);
-                        targetLat = parseFloat(match[1]);
-                        coordinatesAvailable = true;
+                    // Correctly decode PostGIS EWKB (Extended Well-Known Binary)
+                    try {
+                        const buf = Buffer.from(listing.location, 'hex');
+                        // Byte length for a standard 2D Point in PostGIS is 25 bytes
+                        if (buf.length >= 25) {
+                            targetLng = buf.readDoubleLE(9);
+                            targetLat = buf.readDoubleLE(17);
+                            coordinatesAvailable = true;
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse geography location", e);
                     }
                 } else if (listing.location.coordinates) {
                     targetLng = listing.location.coordinates[0];
