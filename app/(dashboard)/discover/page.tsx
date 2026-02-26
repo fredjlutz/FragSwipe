@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useSwipeQueue } from '@/hooks/useSwipeQueue';
 import ListingSwipeCard from '@/components/swipe/ListingSwipeCard';
-import { Filter, Settings2, Ghost, Map } from 'lucide-react';
+import { Filter, Ghost } from 'lucide-react';
 import { listingCategories } from '@/lib/validation/listingSchema';
 
 export default function DiscoverPage() {
-    const { latitude, longitude, error: geoError, loading: geoLoading } = useGeolocation();
+    const { latitude, longitude, error: geoError } = useGeolocation();
 
     const [filterRadius, setFilterRadius] = useState<number>(25);
     const [filterCategory, setFilterCategory] = useState<string>('');
