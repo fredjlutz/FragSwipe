@@ -1,14 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { listingSchema, type ListingFormValues, listingCategories } from '@/lib/validation/listingSchema';
 import imageCompression from 'browser-image-compression';
 import { createClient } from '@/lib/supabase/client';
-import { UploadCloud, CheckCircle2, ChevronRight, ChevronLeft, AlertCircle } from 'lucide-react';
+import { UploadCloud, CheckCircle2, ChevronRight, ChevronLeft, AlertCircle, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NewListingPage() {
     const router = useRouter();
@@ -29,6 +30,22 @@ export default function NewListingPage() {
     });
 
     const supabase = createClient();
+    const [hasLocation, setHasLocation] = useState(true);
+
+    useEffect(() => {
+        const checkProfile = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const { data } = await supabase
+                    .from('profiles')
+                    .select('neighbourhood')
+                    .eq('id', session.user.id)
+                    .single();
+                setHasLocation(!!data?.neighbourhood);
+            }
+        };
+        checkProfile();
+    }, [supabase]);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
@@ -134,6 +151,22 @@ export default function NewListingPage() {
                 <div className="mb-6 p-4 rounded-md bg-red-50 border border-red-200 flex items-start text-red-700">
                     <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0" />
                     <p>{errorStatus}</p>
+                </div>
+            )}
+
+            {!hasLocation && (
+                <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start text-amber-800 shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+                    <MapPin className="w-5 h-5 mr-3 flex-shrink-0 text-amber-600 mt-0.5" />
+                    <div>
+                        <p className="font-bold text-sm">Missing Neighbourhood</p>
+                        <p className="text-xs mt-1 leading-relaxed">
+                            You haven&apos;t set your neighbourhood in your profile. Your listings will be visible nationally,
+                            but buyers won&apos;t know your general area.
+                            <Link href="/profile" className="font-bold underline ml-1 hover:text-amber-900">
+                                Set it now
+                            </Link>
+                        </p>
+                    </div>
                 </div>
             )}
 

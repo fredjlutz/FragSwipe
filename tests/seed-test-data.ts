@@ -86,12 +86,36 @@ async function main() {
         });
     }
 
-    const { error: activeError } = await supabase.from('listings').insert(activeListings);
-    if (activeError) {
+    const { data: listings, error: activeError } = await supabase.from('listings').insert(activeListings).select('id');
+    if (activeError || !listings) {
         console.error('Failed to create active listings:', activeError);
         process.exit(1);
     }
-    console.log('✅ Created 20 active listings.');
+    console.log(`✅ Created ${listings.length} active listings.`);
+
+    // 3.5 ADD IMAGES TO LISTINGS
+    console.log('🖼️ Adding placeholder images...');
+    const images = [];
+    const placeholders = [
+        'https://images.unsplash.com/photo-1546500840-ae38253aba9b?auto=format&fit=crop&q=80&w=800',
+        'https://images.unsplash.com/photo-1520301255226-bf5f144451c1?auto=format&fit=crop&q=80&w=800',
+        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=800'
+    ];
+
+    for (const listing of listings) {
+        images.push({
+            listing_id: listing.id,
+            storage_path: placeholders[Math.floor(Math.random() * placeholders.length)],
+            display_order: 0
+        });
+    }
+
+    const { error: imageError } = await supabase.from('listing_images').insert(images);
+    if (imageError) {
+        console.error('Failed to add listing images:', imageError);
+    } else {
+        console.log('✅ Added images to all listings.');
+    }
 
     // 4. CREATE SHADOW BANNED LISTINGS
     const bannedListings = [];

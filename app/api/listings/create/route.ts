@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         }
 
         // 4. Insert Listing
-        // We clone the location and neighbourhood from the user's profile to freeze it for this listing
+        // We clone the location and neighbourhood from the user's profile
         const { data: listing, error: insertError } = await supabase
             .from('listings')
             .insert({
@@ -64,8 +64,8 @@ export async function POST(request: Request) {
                 category: parsedData.category,
                 tags: parsedData.tags,
                 status: 'active', // Moderation edge function will pick this up
-                location: profile.location,
-                neighbourhood: profile.neighbourhood,
+                location: profile.location || null,
+                neighbourhood: profile.neighbourhood || null,
             })
             .select('id')
             .single();

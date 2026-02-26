@@ -11,6 +11,7 @@
     "generate:types": "npx supabase gen types typescript --local > lib/database.types.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "seed": "npx tsx tests/seed-test-data.ts",
     "prepare": "husky"
   },
   "dependencies": {

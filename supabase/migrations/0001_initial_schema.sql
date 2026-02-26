@@ -19,9 +19,9 @@ CREATE TABLE profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     full_name TEXT NOT NULL,
     whatsapp_number TEXT NOT NULL,
-    raw_address TEXT NOT NULL,
-    neighbourhood TEXT NOT NULL,
-    location GEOGRAPHY(POINT) NOT NULL,
+    raw_address TEXT,
+    neighbourhood TEXT,
+    location GEOGRAPHY(POINT),
     role role_enum DEFAULT 'member',
     subscription_tier subscription_tier_enum DEFAULT 'free',
     is_banned BOOLEAN DEFAULT FALSE,
@@ -41,8 +41,8 @@ CREATE TABLE listings (
     tags TEXT[],
     status status_enum DEFAULT 'active',
     moderation_flag BOOLEAN DEFAULT FALSE,
-    location GEOGRAPHY(POINT) NOT NULL,
-    neighbourhood TEXT NOT NULL,
+    location GEOGRAPHY(POINT),
+    neighbourhood TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
