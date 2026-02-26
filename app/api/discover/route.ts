@@ -81,7 +81,7 @@ export async function GET(request: Request) {
         });
 
         // 3. SECURE MAPPING
-        const mappedListings = rawListings.map((listing: { id: string; seller_id: string; title: string; description: string; price: number; category: string; tags: string[]; neighbourhood: string; location: string | { coordinates: [number, number] } | null; created_at: string; }) => {
+        const mappedListings = rawListings.map((listing: { id: string; seller_id: string; title: string; description: string; price: number; category: string; tags: string[]; neighbourhood: string; location: string | { coordinates: [number, number] } | null; pickup_available: boolean; delivery_available: boolean; created_at: string; }) => {
             let calcDistance = 0;
             let targetLat = 0;
             let targetLng = 0;
@@ -124,6 +124,8 @@ export async function GET(request: Request) {
                 images: imagesMap[listing.id] || [],
                 seller_whatsapp: whatsappMap[listing.seller_id] || '',
                 seller_name: nameMap[listing.seller_id] || 'Unknown Seller',
+                pickup_available: listing.pickup_available ?? true,
+                delivery_available: listing.delivery_available ?? false,
                 created_at: listing.created_at
             };
         });

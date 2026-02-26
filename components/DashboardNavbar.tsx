@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 import {
     Menu,
     X,
@@ -12,7 +13,8 @@ import {
     Heart,
     CreditCard,
     LogOut,
-    UserCircle
+    UserCircle,
+    ShieldCheck
 } from 'lucide-react';
 
 const navItems = [
@@ -21,12 +23,28 @@ const navItems = [
     { name: 'My Listings', href: '/my-listings', icon: List },
     { name: 'Favourites', href: '/favourites', icon: Heart },
     { name: 'Profile', href: '/profile', icon: UserCircle },
-    { name: 'Subscribe', href: '/subscribe', icon: CreditCard },
 ];
 
 export default function DashboardNavbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const pathname = usePathname();
+    const supabase = createClient();
+
+    useEffect(() => {
+        const checkAdmin = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const { data } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+                setIsAdmin(data?.role === 'admin');
+            }
+        };
+        checkAdmin();
+    }, [supabase]);
 
     return (
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -62,6 +80,22 @@ export default function DashboardNavbar() {
                                 </Link>
                             );
                         })}
+                        <Link
+                            href="/subscribe"
+                            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${pathname === '/subscribe' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                        >
+                            <CreditCard className="w-4 h-4" />
+                            Subscribe
+                        </Link>
+                        {isAdmin && (
+                            <Link
+                                href="/admin"
+                                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-bold text-purple-600 hover:bg-purple-50 transition-colors border border-purple-100"
+                            >
+                                <ShieldCheck className="w-4 h-4" />
+                                Admin
+                            </Link>
+                        )}
                         <a
                             href="/api/auth/signout"
                             className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
@@ -89,39 +123,59 @@ export default function DashboardNavbar() {
             </div>
 
             {/* Mobile Navigation */}
-            {isOpen && (
-                <div className="md:hidden bg-white border-b border-gray-200 shadow-lg animate-in slide-in-from-top duration-200">
-                    <div className="px-2 pt-2 pb-3 space-y-1">
-                        {navItems.map((item) => {
-                            const Icon = item.icon;
-                            const isActive = pathname === item.href;
-                            return (
+            {
+                isOpen && (
+                    <div className="md:hidden bg-white border-b border-gray-200 shadow-lg animate-in slide-in-from-top duration-200">
+                        <div className="px-2 pt-2 pb-3 space-y-1">
+                            {navItems.map((item) => {
+                                const Icon = item.icon;
+                                const isActive = pathname === item.href;
+                                return (
+                                    <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        onClick={() => setIsOpen(false)}
+                                        className={`flex items-center gap-3 px-3 py-3 rounded-lg text-base font-semibold transition-colors ${isActive
+                                            ? 'bg-blue-50 text-blue-700'
+                                            : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                                            }`}
+                                    >
+                                        <Icon className="w-5 h-5" />
+                                        {item.name}
+                                    </Link>
+                                );
+                            })}
+                            <Link
+                                href="/subscribe"
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-3 px-3 py-3 rounded-lg text-base font-semibold transition-colors ${pathname === '/subscribe' ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'}`}
+                            >
+                                <CreditCard className="w-5 h-5" />
+                                Subscribe
+                            </Link>
+                            {isAdmin && (
                                 <Link
-                                    key={item.name}
-                                    href={item.href}
+                                    href="/admin"
                                     onClick={() => setIsOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-3 rounded-lg text-base font-semibold transition-colors ${isActive
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                                        }`}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-lg text-base font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 transition-colors"
                                 >
-                                    <Icon className="w-5 h-5" />
-                                    {item.name}
+                                    <ShieldCheck className="w-5 h-5" />
+                                    Admin Panel
                                 </Link>
-                            );
-                        })}
+                            )}
+                        </div>
+                        <div className="pt-4 pb-3 border-t border-gray-100">
+                            <a
+                                href="/api/auth/signout"
+                                className="flex items-center gap-3 px-5 py-3 text-base font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                                <LogOut className="w-5 h-5" />
+                                Sign out
+                            </a>
+                        </div>
                     </div>
-                    <div className="pt-4 pb-3 border-t border-gray-100">
-                        <a
-                            href="/api/auth/signout"
-                            className="flex items-center gap-3 px-5 py-3 text-base font-semibold text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            Sign out
-                        </a>
-                    </div>
-                </div>
-            )}
-        </nav>
+                )
+            }
+        </nav >
     );
 }

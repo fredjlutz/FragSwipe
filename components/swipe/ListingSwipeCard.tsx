@@ -157,6 +157,16 @@ export default function ListingSwipeCard({ listing, active, onSwipe, sellerWhats
                         <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full border border-gray-200 capitalize">
                             {listing.category.replace('_', ' ')}
                         </span>
+                        {listing.pickup_available && (
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-full border border-blue-100 font-semibold">
+                                Pickup
+                            </span>
+                        )}
+                        {listing.delivery_available && (
+                            <span className="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded-full border border-green-100 font-semibold">
+                                Delivery
+                            </span>
+                        )}
                         {(listing.tags || []).slice(0, 2).map((tag: string) => (
                             <span key={tag} className="px-2 py-0.5 bg-gray-50 text-gray-500 text-xs rounded-full border border-gray-100">
                                 {tag}

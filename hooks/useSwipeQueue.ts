@@ -15,6 +15,8 @@ export type SwipeListing = {
     images: string[];
     seller_whatsapp: string;
     seller_name: string;
+    pickup_available: boolean;
+    delivery_available: boolean;
     created_at: string;
 };
 

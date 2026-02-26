@@ -35,6 +35,8 @@ export const listingSchema = z.object({
         .max(5, 'Maximum of 5 tags allowed')
         .optional()
         .default([]),
+    pickup_available: z.boolean().default(true),
+    delivery_available: z.boolean().default(false),
 });
 
 export type ListingFormValues = z.infer<typeof listingSchema>;

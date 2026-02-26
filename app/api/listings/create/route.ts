@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
         if (!isListingCreationAllowed(count || 0, tier)) {
             return NextResponse.json(
-                { error: 'Upgrade your plan to add more listings' },
+                { error: 'You have reached the maximum of 10 active listings. To list more, please email fred@capereef.club for an upgrade.' },
                 { status: 403 }
             );
         }
@@ -66,6 +66,8 @@ export async function POST(request: Request) {
                 status: 'active', // Moderation edge function will pick this up
                 location: profile.location || null,
                 neighbourhood: profile.neighbourhood || null,
+                pickup_available: parsedData.pickup_available,
+                delivery_available: parsedData.delivery_available,
             })
             .select('id')
             .single();

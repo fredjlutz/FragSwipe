@@ -251,6 +251,20 @@ export default function NewListingPage() {
                             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
                         </div>
 
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Options (Select at least one)</label>
+                            <div className="flex gap-4">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" {...register('pickup_available')} className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500" />
+                                    <span className="text-sm text-gray-700 font-medium font-bold">Available for Pickup</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" {...register('delivery_available')} className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500" />
+                                    <span className="text-sm text-gray-700 font-medium font-bold">Available for Delivery</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div className="bg-yellow-50 p-3 rounded-md text-sm text-yellow-800 border border-yellow-200">
                             <p className="font-semibold">Important Rule:</p>
                             Please do not include HTTP links or URLs in the title or description. Listings containing URLs will be sent for manual review (Shadow Banned).
@@ -275,6 +289,15 @@ export default function NewListingPage() {
                             <div className="py-3 flex justify-between">
                                 <dt className="text-sm font-medium text-gray-500">Price</dt>
                                 <dd className="text-sm text-gray-900 font-semibold">R {watch('price')}</dd>
+                            </div>
+                            <div className="py-3 flex justify-between">
+                                <dt className="text-sm font-medium text-gray-500">Collection</dt>
+                                <dd className="text-sm text-gray-900">
+                                    {[
+                                        watch('pickup_available') && 'Pickup',
+                                        watch('delivery_available') && 'Delivery'
+                                    ].filter(Boolean).join(' & ') || 'None selected'}
+                                </dd>
                             </div>
                             <div className="py-3">
                                 <dt className="text-sm font-medium text-gray-500 mb-1">Description</dt>
