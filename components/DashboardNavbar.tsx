@@ -62,6 +62,13 @@ export default function DashboardNavbar() {
                                 </Link>
                             );
                         })}
+                        <Link
+                            href="/api/auth/signout"
+                            className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Sign out
+                        </Link>
                     </div>
 
                     {/* Mobile menu button */}

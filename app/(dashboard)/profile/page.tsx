@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, Phone, MapPin, Save, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { User, Phone, MapPin, Save, Loader2, CheckCircle2, AlertCircle, KeyRound, LogOut } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 export default function ProfilePage() {
     const [loading, setLoading] = useState(true);
@@ -14,6 +16,13 @@ export default function ProfilePage() {
         neighbourhood: '',
         raw_address: ''
     });
+
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [updatingPassword, setUpdatingPassword] = useState(false);
+    const [passwordMessage, setPasswordMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+    const supabase = createClient();
 
     useEffect(() => {
         fetchProfile();
@@ -65,6 +74,35 @@ export default function ProfilePage() {
             setMessage({ type: 'error', text: 'An unexpected error occurred' });
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handlePasswordUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setPasswordMessage(null);
+
+        if (password !== confirmPassword) {
+            setPasswordMessage({ type: 'error', text: 'Passwords do not match.' });
+            return;
+        }
+
+        if (password.length < 6) {
+            setPasswordMessage({ type: 'error', text: 'Password must be at least 6 characters.' });
+            return;
+        }
+
+        setUpdatingPassword(true);
+
+        try {
+            const { error } = await supabase.auth.updateUser({ password });
+            if (error) throw error;
+            setPasswordMessage({ type: 'success', text: 'Password updated successfully!' });
+            setPassword('');
+            setConfirmPassword('');
+        } catch (err: unknown) {
+            setPasswordMessage({ type: 'error', text: err instanceof Error ? err.message : 'Failed to update password.' });
+        } finally {
+            setUpdatingPassword(false);
         }
     };
 
@@ -202,6 +240,74 @@ export default function ProfilePage() {
                         </button>
                     </div>
                 </form>
+
+                {/* Password Update section */}
+                <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-6 sm:p-8 space-y-6">
+                        <div className="flex items-center gap-2 mb-2">
+                            <KeyRound className="w-5 h-5 text-blue-600" />
+                            <h2 className="text-lg font-bold text-gray-900">Security</h2>
+                        </div>
+
+                        {passwordMessage && (
+                            <div className={`mb-4 p-4 rounded-xl flex items-center gap-3 animate-in fade-in ${passwordMessage.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'
+                                }`}>
+                                {passwordMessage.type === 'success' ? <CheckCircle2 className="w-5 h-5 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 flex-shrink-0" />}
+                                <p className="text-sm font-medium">{passwordMessage.text}</p>
+                            </div>
+                        )}
+
+                        <form onSubmit={handlePasswordUpdate} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    New Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                                    placeholder="Enter new password"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Confirm New Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+                                    placeholder="Confirm new password"
+                                    required
+                                />
+                            </div>
+                            <div className="flex justify-end pt-2">
+                                <button
+                                    type="submit"
+                                    disabled={updatingPassword || !password || !confirmPassword}
+                                    className="inline-flex items-center justify-center px-6 py-2 border border-transparent text-sm font-bold rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                                >
+                                    {updatingPassword ? 'Updating...' : 'Change Password'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {/* Logout Action */}
+                <div className="mt-8 flex justify-center pb-12">
+                    <Link
+                        href="/api/auth/signout"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 font-bold transition-colors"
+                    >
+                        <LogOut className="w-5 h-5" />
+                        Sign Out of FragSwipe
+                    </Link>
+                </div>
+
             </div>
         </div>
     );
