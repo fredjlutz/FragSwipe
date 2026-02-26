@@ -18,17 +18,38 @@ export async function middleware(request: NextRequest) {
         env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         {
             cookies: {
-                getAll() {
-                    return request.cookies.getAll();
+                get(name: string) {
+                    return request.cookies.get(name)?.value;
                 },
-                setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
-                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+                set(name: string, value: string, options: any) {
+                    request.cookies.set({
+                        name,
+                        value,
+                        ...options,
+                    });
                     response = NextResponse.next({
                         request,
                     });
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        response.cookies.set(name, value, options)
-                    );
+                    response.cookies.set({
+                        name,
+                        value,
+                        ...options,
+                    });
+                },
+                remove(name: string, options: any) {
+                    request.cookies.set({
+                        name,
+                        value: '',
+                        ...options,
+                    });
+                    response = NextResponse.next({
+                        request,
+                    });
+                    response.cookies.set({
+                        name,
+                        value: '',
+                        ...options,
+                    });
                 },
             },
         }
@@ -38,9 +59,7 @@ export async function middleware(request: NextRequest) {
     const path = url.pathname;
     const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
-    const allCookies = request.cookies.getAll();
-    console.log(`Middleware running for: ${path}. Cookies: ${allCookies.length}`);
-    // console.log('Cookie names:', allCookies.map(c => c.name).join(', '));
+    console.log(`Middleware running for: ${path}`);
 
     // Rate Limiting for Listing Creation API
     if (path === '/api/listings/create' && request.method === 'POST') {
@@ -64,13 +83,9 @@ export async function middleware(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError) {
-        console.error(`Middleware auth error for ${path}:`, {
-            message: authError.message,
-            status: (authError as any).status,
-            name: authError.name
-        });
+        console.error(`Middleware auth error for ${path}: ${authError.message}`);
     }
-    console.log(`User status for ${path}:`, !!user);
+    console.log(`User status for ${path}: ${!!user}`);
 
     if (user) {
         console.log(`User ${user.id} authenticated, checking profile...`);
